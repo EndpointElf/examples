@@ -1,0 +1,41 @@
+name: Generate OpenAPI projects
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+    contents: write
+
+jobs:
+  generate:
+    name: Generate OpenAPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+        id: go
+
+      - name: Download EndpointElf
+        run: |
+          wget -O endpointelf.zip https://endpointelf-releases.nyc3.cdn.digitaloceanspaces.com/dl/EndpointElf_linux_amd64_v0.3.2.zip
+          unzip endpointelf.zip
+
+      - name: moov-io/ach
+        run: |
+          git clone https://github.com/moov-io/ach.git
+          ./bin/endpointelf -output api.yaml update ./ach/server/
+        env:
+          ENDPOINTELF_LICENSE_KEY: ${{ secrets.ENDPOINTELF_LICENSE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moovio-ach-api.yaml
+          path: api.yaml
+          retention-days: 30
