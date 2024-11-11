@@ -23,7 +23,7 @@ jobs:
 
       - name: Download EndpointElf
         run: |
-          wget -O endpointelf.zip https://endpointelf-releases.nyc3.cdn.digitaloceanspaces.com/dl/EndpointElf_linux_amd64_v0.3.3.zip
+          wget -O endpointelf.zip https://endpointelf-releases.nyc3.cdn.digitaloceanspaces.com/dl/EndpointElf_linux_amd64_v0.3.4.zip
           unzip endpointelf.zip
 
       - name: moov-io/ach
