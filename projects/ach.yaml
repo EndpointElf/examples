@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  contact: {}
+  license:
+    name: ""
+  title: API
+  version: 1.0.0
+paths:
+  "": {}
+  /files:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/File'
+                type: array
+          description: Successful retrieval of ACH files
+        default:
+          description: ""
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/File'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: Resource ID of the created ACH file
+                    type: string
+                type: object
+          description: Successful creation of ACH file
+        "201":
+          description: ACH file stored successfully
+        "400":
+          description: Bad request
+      summary: Store a new ACH file
+  /files/{fileID}:
+    delete:
+      responses:
+        default:
+          description: ""
+    get:
+      responses:
+        default:
+          description: ""
+    post:
+      responses:
+        default:
+          description: ""
+  /files/{fileID}/balance:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+          description: Successful response
+        default:
+          description: ""
+  /files/{fileID}/batches:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Batch'
+                type: array
+          description: Successful retrieval of batches
+        "404":
+          description: File or batch not found
+        default:
+          description: ""
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: Resource ID of the created batch
+                    type: string
+                type: object
+          description: Successful creation of batch
+        "400":
+          description: Bad request
+        default:
+          description: ""
+  /files/{fileID}/batches/{batchID}:
+    delete:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+          description: Successful response
+        "204":
+          description: Batch deleted successfully
+        "404":
+          description: File or batch not found
+        default:
+          description: ""
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: Successful retrieval of the batch
+        "404":
+          description: File or batch not found
+        default:
+          description: ""
+  /files/{fileID}/flatten:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlattenResponse'
+          description: Successful response
+        default:
+          description: ""
+  /files/{fileID}/segment:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentResponse'
+          description: Successful response
+        default:
+          description: ""
+  /files/{id}/build:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildResponse'
+          description: Successful response
+        default:
+          description: ""
+  /files/{id}/contents:
+    get:
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                format: binary
+                type: string
+          description: Successful retrieval of the ACH file contents
+        "404":
+          description: File not found
+        default:
+          description: ""
+  /files/{id}/validate:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+          description: Successful response
+        default:
+          description: ""
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+          description: File validation successful
+        "400":
+          description: Bad request
+        default:
+          description: ""
+  /ping:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: Successful response
+          headers:
+            Content-Type:
+              description: text/plain
+              schema:
+                type: string
+        default:
+          description: ""
+  /segment:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentResponse'
+          description: Successful response
+        default:
+          description: ""
+components: {}
