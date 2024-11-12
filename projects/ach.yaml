@@ -14,10 +14,8 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/File'
-                type: array
-          description: Successful retrieval of ACH files
+                $ref: '#/components/schemas/FileList'
+          description: Successful response
         default:
           description: ""
     post:
@@ -34,14 +32,14 @@ paths:
               schema:
                 properties:
                   id:
-                    description: Resource ID of the created ACH file
+                    example: "123456"
                     type: string
                 type: object
-          description: Successful creation of ACH file
+          description: Successful operation
         "201":
           description: ACH file stored successfully
         "400":
-          description: Bad request
+          description: Invalid input
       summary: Store a new ACH file
   /files/{fileID}:
     delete:
@@ -59,12 +57,6 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BalanceResponse'
-          description: Successful response
         default:
           description: ""
   /files/{fileID}/batches:
@@ -77,9 +69,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Batch'
                 type: array
-          description: Successful retrieval of batches
+          description: List of batches
         "404":
-          description: File or batch not found
+          description: File or batches not found
         default:
           description: ""
     post:
@@ -90,12 +82,12 @@ paths:
               schema:
                 properties:
                   id:
-                    description: Resource ID of the created batch
+                    example: "789012"
                     type: string
                 type: object
-          description: Successful creation of batch
+          description: Successful operation
         "400":
-          description: Bad request
+          description: Invalid input
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -105,12 +97,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteResponse'
-          description: Successful response
-        "204":
+                $ref: '#/components/schemas/deleteBatchResponse'
           description: Batch deleted successfully
+        "204":
+          description: Batch deleted
         "404":
-          description: File or batch not found
+          description: Batch not found
         default:
           description: ""
     get:
@@ -119,10 +111,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Batch'
-          description: Successful retrieval of the batch
+                $ref: '#/components/schemas/Batcher'
+          description: Successful operation
         "404":
-          description: File or batch not found
+          description: Batch not found
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -139,12 +131,6 @@ paths:
   /files/{fileID}/segment:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SegmentResponse'
-          description: Successful response
         default:
           description: ""
   /files/{id}/build:
@@ -165,9 +151,8 @@ paths:
           content:
             text/plain:
               schema:
-                format: binary
                 type: string
-          description: Successful retrieval of the ACH file contents
+          description: Successful response
         "404":
           description: File not found
         default:
@@ -190,9 +175,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: File validation successful
+          description: Successful response
         "400":
-          description: Bad request
+          description: Invalid file
         default:
           description: ""
   /ping:
