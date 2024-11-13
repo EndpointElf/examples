@@ -32,14 +32,14 @@ paths:
               schema:
                 properties:
                   id:
-                    example: "123456"
+                    description: Resource ID of the created ACH file
                     type: string
                 type: object
-          description: Successful operation
+          description: Successful creation of ACH file
         "201":
           description: ACH file stored successfully
         "400":
-          description: Invalid input
+          description: Bad request
       summary: Store a new ACH file
   /files/{fileID}:
     delete:
@@ -57,6 +57,12 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+          description: Successful response
         default:
           description: ""
   /files/{fileID}/batches:
@@ -66,10 +72,8 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Batch'
-                type: array
-          description: List of batches
+                $ref: '#/components/schemas/BatchList'
+          description: Successful response
         "404":
           description: File or batches not found
         default:
@@ -80,14 +84,10 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  id:
-                    example: "789012"
-                    type: string
-                type: object
-          description: Successful operation
+                $ref: '#/components/schemas/BatchResponse'
+          description: Successful response
         "400":
-          description: Invalid input
+          description: Bad request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -97,10 +97,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/deleteBatchResponse'
-          description: Batch deleted successfully
+                $ref: '#/components/schemas/DeleteResponse'
+          description: Successful response
         "204":
-          description: Batch deleted
+          description: Batch deleted successfully
         "404":
           description: Batch not found
         default:
@@ -111,8 +111,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Batcher'
-          description: Successful operation
+                $ref: '#/components/schemas/BatchResponse'
+          description: Successful response
         "404":
           description: Batch not found
         default:
@@ -131,6 +131,12 @@ paths:
   /files/{fileID}/segment:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentResponse'
+          description: Successful response
         default:
           description: ""
   /files/{id}/build:
@@ -177,7 +183,7 @@ paths:
                 $ref: '#/components/schemas/ValidationResponse'
           description: Successful response
         "400":
-          description: Invalid file
+          description: Bad request
         default:
           description: ""
   /ping:
