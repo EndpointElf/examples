@@ -32,7 +32,7 @@ jobs:
       - name: moov-io/ach
         run: |
           git clone https://github.com/moov-io/ach.git
-          ./bin/endpointelf -output projects/ach.yaml update ./ach/server/
+          ./bin/endpointelf update -output projects/ach.yaml ./ach/server/
         env:
           ENDPOINTELF_LICENSE_KEY: ${{ secrets.ENDPOINTELF_LICENSE_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
