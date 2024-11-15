@@ -32,7 +32,7 @@ jobs:
       - name: moov-io/ach
         run: |
           git clone https://github.com/moov-io/ach.git
-          ./bin/endpointelf -output=projects/ach.yaml update ./ach/server/
+          ./bin/endpointelf -output projects/ach.yaml update ./ach/server/
         env:
           ENDPOINTELF_LICENSE_KEY: ${{ secrets.ENDPOINTELF_LICENSE_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -42,5 +42,5 @@ jobs:
           git config user.name "eelf-bot"
           git config user.email "bot@endpointelf.com"
           git add projects/
-          git commit -m "chore: updating moov-io/ach example [skip ci]" || echo "No changes to commit"
+          git commit -m "chore: updating moov-io/ach example" || echo "No changes to commit"
           git push origin master
