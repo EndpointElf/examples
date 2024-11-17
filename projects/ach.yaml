@@ -21,14 +21,34 @@ paths:
   /files/{fileID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponse'
+          description: File deleted successfully
+        "204":
+          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponse'
+          description: ACH file details
         default:
           description: ""
     post:
       responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -61,6 +81,12 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/CreateBatchResponse'
+          description: Batch created successfully
+        "201":
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
         "400":
@@ -75,6 +101,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
+          description: Batch deleted successfully
+        "204":
           description: Batch deleted successfully
         "400":
           description: Invalid request
@@ -99,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/FlattenBatchesResponse'
           description: Batches flattened successfully
         default:
           description: ""
@@ -219,44 +247,27 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch details
       properties:
-        batchHeader:
-          description: Header information for the batch
-          properties:
-            companyName:
-              description: Company name
-              type: string
-            serviceClassCode:
-              description: Service class code
-              type: integer
-          type: object
-        entries:
-          items:
-            description: Entry details
-            properties:
-              amount:
-                description: Transaction amount
-                type: integer
-              transactionCode:
-                description: Transaction code
-                type: integer
-            type: object
-          type: array
+        created_at:
+          format: date-time
+          type: string
+        id:
+          type: string
+        name:
+          type: string
       type: object
     BatchResponse:
       properties:
-        id:
-          example: batch123
-          type: string
-        status:
-          example: valid
-          type: string
+        batch:
+          $ref: '#/components/schemas/Batch'
       type: object
     BatchesResponse:
-      items:
-        $ref: '#/components/schemas/BatchResponse'
-      type: array
+      properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+      type: object
     BuildFileResponse:
       properties:
         error:
@@ -264,23 +275,6 @@ components:
           type: string
         file:
           $ref: '#/components/schemas/File'
-      type: object
-    CreateBatchRequest:
-      properties:
-        batchHeader:
-          properties:
-            serviceClassCode:
-              example: 200
-              type: integer
-          type: object
-        entries:
-          items:
-            properties:
-              transactionCode:
-                example: 22
-                type: integer
-            type: object
-          type: array
       type: object
     CreateBatchResponse:
       properties:
@@ -338,20 +332,16 @@ components:
       type: object
     FileResponse:
       properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
-        status:
-          example: valid
-          type: string
+        file:
+          $ref: '#/components/schemas/File'
       type: object
     FilesResponse:
-      items:
-        $ref: '#/components/schemas/FileResponse'
-      type: array
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
     FlattenBatchesResponse:
       properties:
         error:
@@ -466,6 +456,5 @@ components:
             type: string
           type: array
         valid:
-          example: true
           type: boolean
       type: object
