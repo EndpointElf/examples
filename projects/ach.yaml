@@ -14,8 +14,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetFilesResponse'
-          description: A list of ACH files
+                $ref: '#/components/schemas/FilesResponse'
+          description: List of files
         default:
           description: ""
     post:
@@ -25,7 +25,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
-        required: true
       responses:
         "200":
           content:
@@ -37,34 +36,14 @@ paths:
   /files/{fileID}:
     delete:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteFileResponse'
-          description: Confirmation of file deletion
-        "204":
-          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFileResponse'
-          description: The requested ACH file
         default:
           description: ""
     post:
       responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FileResponse'
-          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -74,8 +53,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
+                $ref: '#/components/schemas/FileResponse'
+          description: File balanced successfully
         default:
           description: ""
   /files/{fileID}/batches:
@@ -87,6 +66,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -103,6 +84,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -116,6 +99,8 @@ paths:
           description: Batch deleted successfully
         "204":
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -126,6 +111,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -135,8 +122,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
+                $ref: '#/components/schemas/FileResponse'
+          description: Batches flattened successfully
         default:
           description: ""
   /files/{fileID}/segment:
@@ -146,8 +133,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
+                $ref: '#/components/schemas/FileResponse'
+          description: File segmented successfully
         default:
           description: ""
   /files/{id}/build:
@@ -181,7 +168,7 @@ paths:
             text/plain:
               schema:
                 type: string
-          description: The contents of the ACH file
+          description: File contents
         default:
           description: ""
   /files/{id}/validate:
@@ -201,8 +188,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidateFileResponse'
-          description: Validation result
+                $ref: '#/components/schemas/ValidationResponse'
+          description: File validation result
         default:
           description: ""
   /ping:
@@ -217,7 +204,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -232,7 +219,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentResponse'
+                $ref: '#/components/schemas/FileResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -258,19 +245,14 @@ components:
         id:
           type: string
       type: object
-    BalanceResponse:
-      properties:
-        balanced:
-          example: true
-          type: boolean
-      type: object
     Batch:
       properties:
+        created_at:
+          format: date-time
+          type: string
         id:
-          example: batch123
           type: string
         name:
-          example: Batch 1
           type: string
       type: object
     BatchResponse:
@@ -293,19 +275,14 @@ components:
         file:
           $ref: '#/components/schemas/ACHFile'
       type: object
-    CreateBatchRequest:
-      properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
-      type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed
+          description: Error message if the batch creation failed.
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch.
           type: string
       type: object
     CreateFileRequest:
@@ -328,7 +305,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed
+          description: Error message if deleting the batch failed.
           nullable: true
           type: string
       type: object
@@ -338,13 +315,20 @@ components:
           nullable: true
           type: string
       type: object
+    ErrorResponse:
+      properties:
+        error:
+          description: Error message describing the issue.
+          type: string
+      type: object
     File:
       properties:
+        created_at:
+          format: date-time
+          type: string
         id:
-          example: file123
           type: string
         name:
-          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -376,18 +360,12 @@ components:
         id:
           type: string
       type: object
-    FlattenResponse:
-      properties:
-        flattened:
-          example: true
-          type: boolean
-      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed
+          description: Error message if fetching the batch failed.
           nullable: true
           type: string
       type: object
@@ -398,7 +376,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed
+          description: Error message if fetching batches failed.
           nullable: true
           type: string
       type: object
@@ -448,13 +426,6 @@ components:
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
-    SegmentResponse:
-      properties:
-        segments:
-          items:
-            type: string
-          type: array
-      type: object
     SegmentedFilesResponse:
       properties:
         creditFile:
@@ -477,8 +448,57 @@ components:
       type: object
     ValidateOpts:
       properties:
-        someOption:
-          type: string
+        AllowInvalidAmounts:
+          description: Allow invalid amounts.
+          type: boolean
+        AllowInvalidCheckDigit:
+          description: Allow invalid check digit.
+          type: boolean
+        AllowMissingFileControl:
+          description: Allow missing file control.
+          type: boolean
+        AllowMissingFileHeader:
+          description: Allow missing file header.
+          type: boolean
+        AllowUnorderedBatchNumbers:
+          description: Allow unordered batch numbers.
+          type: boolean
+        AllowZeroBatches:
+          description: Allow zero batches.
+          type: boolean
+        AllowZeroEntryAmount:
+          description: Allow zero entry amount.
+          type: boolean
+        BypassCompanyIdentificationMatch:
+          description: Bypass company identification match.
+          type: boolean
+        BypassDestinationValidation:
+          description: Bypass destination validation.
+          type: boolean
+        BypassOriginValidation:
+          description: Bypass origin validation.
+          type: boolean
+        CustomReturnCodes:
+          description: Allow custom return codes.
+          type: boolean
+        CustomTraceNumbers:
+          description: Allow custom trace numbers.
+          type: boolean
+        PreserveSpaces:
+          description: Preserve spaces in fields.
+          type: boolean
+        RequireABAOrigin:
+          description: Require ABA origin.
+          type: boolean
+        SkipAll:
+          description: Skip all validations.
+          type: boolean
+        UnequalAddendaCounts:
+          description: Allow unequal addenda counts.
+          type: boolean
+        UnequalServiceClassCode:
+          description: Allow unequal service class code.
+          type: boolean
       type: object
     ValidationResponse:
       properties:
@@ -487,6 +507,5 @@ components:
             type: string
           type: array
         valid:
-          example: true
           type: boolean
       type: object
