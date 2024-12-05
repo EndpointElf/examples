@@ -21,32 +21,14 @@ paths:
   /files/{fileID}:
     delete:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteFileResponse'
-          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFileResponse'
-          description: ACH file details
         default:
           description: ""
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FileResponse'
-          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -69,6 +51,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -79,6 +63,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -90,6 +76,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -100,6 +88,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -194,7 +184,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG response
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -217,6 +207,10 @@ components:
   schemas:
     ACHFile:
       properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -243,12 +237,10 @@ components:
       type: object
     Batch:
       properties:
-        id:
-          example: batch123
-          type: string
-        name:
-          example: Batch 1
-          type: string
+        entries:
+          items:
+            $ref: '#/components/schemas/Entry'
+          type: array
       type: object
     BatchResponse:
       properties:
@@ -315,6 +307,13 @@ components:
         message:
           example: Resource deleted successfully
           type: string
+      type: object
+    Entry:
+      properties:
+        amount:
+          type: integer
+        transactionCode:
+          type: integer
       type: object
     File:
       properties:
@@ -452,6 +451,11 @@ components:
         error:
           nullable: true
           type: string
+      type: object
+    ValidateFileRequest:
+      properties:
+        opts:
+          $ref: '#/components/schemas/ValidateOpts'
       type: object
     ValidateFileResponse:
       properties:
