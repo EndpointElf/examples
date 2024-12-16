@@ -25,6 +25,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
+        required: true
       responses:
         "200":
           content:
@@ -175,9 +176,6 @@ paths:
       responses:
         "200":
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFileContentsResponse'
             text/plain:
               schema:
                 type: string
@@ -217,7 +215,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: Pong response
+          description: PONG
           headers:
             Content-Type:
               description: text/plain
@@ -384,12 +382,6 @@ components:
           type: array
         error:
           description: Error message if any
-          nullable: true
-          type: string
-      type: object
-    GetFileContentsResponse:
-      properties:
-        error:
           nullable: true
           type: string
       type: object
