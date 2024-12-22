@@ -36,34 +36,14 @@ paths:
   /files/{fileID}:
     delete:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteFileResponse'
-          description: Confirmation of file deletion
-        "204":
-          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFileResponse'
-          description: The requested ACH file
         default:
           description: ""
     post:
       responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FileResponse'
-          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -96,12 +76,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-          description: Batch created successfully
-        "201":
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
         "400":
@@ -115,9 +89,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteBatchResponse'
-          description: Batch deleted successfully
-        "204":
+                $ref: '#/components/schemas/DeleteResponse'
           description: Batch deleted successfully
         "400":
           description: Invalid request
@@ -239,7 +211,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/SegmentResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -269,26 +241,30 @@ components:
         id:
           type: string
       type: object
+    BalanceResponse:
+      properties:
+        balanced:
+          type: boolean
+      type: object
     Batch:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            $ref: '#/components/schemas/Entry'
           type: array
       type: object
     BatchResponse:
       properties:
-        id:
-          example: batch123
-          type: string
-        type:
-          example: PPD
-          type: string
+        batch:
+          $ref: '#/components/schemas/Batch'
       type: object
     BatchesResponse:
-      items:
-        $ref: '#/components/schemas/BatchResponse'
-      type: array
+      properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+      type: object
     BuildFileResponse:
       properties:
         error:
@@ -299,14 +275,13 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batchType:
-          example: PPD
-          type: string
+        batch:
+          $ref: '#/components/schemas/Batch'
       type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
@@ -333,7 +308,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -343,12 +318,29 @@ components:
           nullable: true
           type: string
       type: object
-    EntryDetail:
+    DeleteResponse:
+      properties:
+        message:
+          type: string
+      type: object
+    Entry:
       properties:
         amount:
           type: integer
         transactionCode:
           type: integer
+      type: object
+    ExampleResponse:
+      properties:
+        message:
+          type: string
+      type: object
+    File:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
       type: object
     FileHeader:
       properties:
@@ -359,20 +351,16 @@ components:
       type: object
     FileResponse:
       properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
-        status:
-          example: valid
-          type: string
+        file:
+          $ref: '#/components/schemas/File'
       type: object
     FilesResponse:
-      items:
-        $ref: '#/components/schemas/FileResponse'
-      type: array
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
     FlattenBatchesResponse:
       properties:
         error:
@@ -383,12 +371,17 @@ components:
         id:
           type: string
       type: object
+    FlattenResponse:
+      properties:
+        flattened:
+          type: boolean
+      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -399,7 +392,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -430,6 +423,13 @@ components:
         routingNumber:
           type: string
       type: object
+    Segment:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      type: object
     SegmentFileConfiguration:
       properties:
         someConfig:
@@ -448,6 +448,13 @@ components:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
+      type: object
+    SegmentResponse:
+      properties:
+        segments:
+          items:
+            $ref: '#/components/schemas/Segment'
+          type: array
       type: object
     SegmentedFilesResponse:
       properties:
@@ -481,6 +488,5 @@ components:
             type: string
           type: array
         valid:
-          example: true
           type: boolean
       type: object
