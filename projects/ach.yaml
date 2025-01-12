@@ -42,8 +42,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteFileResponse'
           description: Confirmation of file deletion
-        "204":
-          description: File deleted successfully
         default:
           description: ""
     get:
@@ -58,7 +56,7 @@ paths:
           description: ""
     post:
       responses:
-        "201":
+        "200":
           content:
             application/json:
               schema:
@@ -96,12 +94,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-          description: Batch created successfully
-        "201":
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
         "400":
@@ -115,9 +107,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteBatchResponse'
-          description: Batch deleted successfully
-        "204":
+                $ref: '#/components/schemas/DeleteResponse'
           description: Batch deleted successfully
         "400":
           description: Invalid request
@@ -185,9 +175,6 @@ paths:
       responses:
         "200":
           content:
-            application/json:
-              schema:
-                type: string
             text/plain:
               schema:
                 type: string
@@ -242,7 +229,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/SegmentResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -268,14 +255,19 @@ components:
         id:
           type: string
       type: object
+    BalanceResponse:
+      properties:
+        balanced:
+          example: true
+          type: boolean
+      type: object
     Batch:
       properties:
-        created_at:
-          format: date-time
-          type: string
         id:
+          example: batch123
           type: string
         name:
+          example: Batch 1
           type: string
       type: object
     BatchResponse:
@@ -301,11 +293,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message if the operation failed.
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch.
           type: string
       type: object
     CreateFileRequest:
@@ -328,7 +320,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message if the operation failed.
           nullable: true
           type: string
       type: object
@@ -338,14 +330,19 @@ components:
           nullable: true
           type: string
       type: object
+    DeleteResponse:
+      properties:
+        message:
+          example: Resource deleted successfully
+          type: string
+      type: object
     File:
       properties:
-        created_at:
-          format: date-time
-          type: string
         id:
+          example: file123
           type: string
         name:
+          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -377,12 +374,18 @@ components:
         id:
           type: string
       type: object
+    FlattenResponse:
+      properties:
+        flattened:
+          example: true
+          type: boolean
+      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any
+          description: Error message if the operation failed.
           nullable: true
           type: string
       type: object
@@ -393,7 +396,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any
+          description: Error message if the operation failed.
           nullable: true
           type: string
       type: object
@@ -443,6 +446,13 @@ components:
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
+    SegmentResponse:
+      properties:
+        segments:
+          items:
+            type: string
+          type: array
+      type: object
     SegmentedFilesResponse:
       properties:
         creditFile:
@@ -475,5 +485,6 @@ components:
             type: string
           type: array
         valid:
+          example: true
           type: boolean
       type: object
