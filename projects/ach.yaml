@@ -115,7 +115,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
+          description: The ACH file with flattened batches
         default:
           description: ""
   /files/{fileID}/segment:
@@ -194,17 +194,6 @@ paths:
           description: ""
 components:
   schemas:
-    ACHFile:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        header:
-          $ref: '#/components/schemas/FileHeader'
-        id:
-          type: string
-      type: object
     BalanceFileRequest:
       properties:
         offset:
@@ -213,30 +202,47 @@ components:
     BalanceFileResponse:
       properties:
         error:
-          nullable: true
           type: string
         id:
           type: string
       type: object
     Batch:
+      description: ACH Batch object
       properties:
+        batchHeader:
+          description: Batch header details
+          properties:
+            companyName:
+              example: Test Company
+              type: string
+            serviceClassCode:
+              example: 200
+              type: integer
+          type: object
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            description: Entry details
+            properties:
+              amount:
+                example: 1000
+                type: integer
+              transactionCode:
+                example: 22
+                type: integer
+            type: object
           type: array
       type: object
     BuildFileResponse:
       properties:
         error:
-          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
       type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
         id:
@@ -246,44 +252,42 @@ components:
     CreateFileRequest:
       properties:
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
     CreateFileResponse:
       properties:
         error:
-          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         id:
           type: string
       type: object
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
     DeleteFileResponse:
       properties:
         error:
-          nullable: true
           type: string
-      type: object
-    EntryDetail:
-      properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
       type: object
     ErrorResponse:
       properties:
         error:
-          description: A message describing the error.
+          description: Error message describing the issue with the request.
+          type: string
+      type: object
+    File:
+      properties:
+        header:
+          $ref: '#/components/schemas/FileHeader'
+        id:
           type: string
       type: object
     FileHeader:
@@ -296,19 +300,18 @@ components:
     FlattenBatchesResponse:
       properties:
         error:
-          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         id:
           type: string
       type: object
     GetBatchResponse:
       properties:
         batch:
-          type: object
+          $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -316,29 +319,27 @@ components:
       properties:
         batches:
           items:
-            type: object
+            $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
     GetFileResponse:
       properties:
         error:
-          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
       type: object
     GetFilesResponse:
       properties:
         error:
-          nullable: true
           type: string
         files:
           items:
-            $ref: '#/components/schemas/ACHFile'
+            $ref: '#/components/schemas/File'
           type: array
       type: object
     Offset:
@@ -363,7 +364,7 @@ components:
     SegmentFileRequest:
       properties:
         file:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         opts:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
@@ -372,21 +373,19 @@ components:
     SegmentedFilesResponse:
       properties:
         creditFile:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         creditFileID:
           type: string
         debitFile:
-          $ref: '#/components/schemas/ACHFile'
+          $ref: '#/components/schemas/File'
         debitFileID:
           type: string
         error:
-          nullable: true
           type: string
       type: object
     ValidateFileResponse:
       properties:
         error:
-          nullable: true
           type: string
       type: object
     ValidateOpts:
@@ -397,6 +396,6 @@ components:
     ValidationResponse:
       properties:
         message:
-          description: A message indicating the result of the validation.
+          description: Response message indicating the result of the validation.
           type: string
       type: object
