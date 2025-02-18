@@ -143,7 +143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The ACH file with flattened batches
+          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -185,9 +185,6 @@ paths:
       responses:
         "200":
           content:
-            application/json:
-              schema:
-                type: string
             text/plain:
               schema:
                 type: string
@@ -242,7 +239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentResponse'
+                $ref: '#/components/schemas/FileResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -268,33 +265,45 @@ components:
         id:
           type: string
       type: object
-    BalanceResponse:
-      properties:
-        balanced:
-          type: boolean
-      type: object
     Batch:
+      description: ACH Batch object
       properties:
+        batchHeader:
+          description: Header information for the batch
+          properties:
+            companyName:
+              description: Company name
+              type: string
+            serviceClassCode:
+              description: Service class code
+              type: integer
+          type: object
         entries:
           items:
+            description: Entry detail record
+            properties:
+              amount:
+                description: Transaction amount
+                type: integer
+              transactionCode:
+                description: Transaction code
+                type: integer
             type: object
           type: array
-        id:
-          example: batch123
-          type: string
       type: object
     BatchResponse:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        id:
+          example: batch123
+          type: string
+        status:
+          example: valid
+          type: string
       type: object
     BatchesResponse:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/BatchResponse'
+      type: array
     BuildFileResponse:
       properties:
         error:
@@ -305,8 +314,9 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        batchData:
+          example: batch data here
+          type: string
       type: object
     CreateBatchResponse:
       properties:
@@ -348,13 +358,13 @@ components:
           nullable: true
           type: string
       type: object
-    File:
+    ExampleResponse:
       properties:
         id:
-          example: file123
-          type: string
+          example: 1
+          type: integer
         name:
-          example: example.ach
+          example: Example Name
           type: string
       type: object
     FileHeader:
@@ -366,16 +376,17 @@ components:
       type: object
     FileResponse:
       properties:
-        file:
-          $ref: '#/components/schemas/File'
+        id:
+          example: file123
+          type: string
+        status:
+          example: valid
+          type: string
       type: object
     FilesResponse:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/File'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/FileResponse'
+      type: array
     FlattenBatchesResponse:
       properties:
         error:
@@ -385,11 +396,6 @@ components:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
-      type: object
-    FlattenResponse:
-      properties:
-        flattened:
-          type: boolean
       type: object
     GetBatchResponse:
       properties:
@@ -439,6 +445,9 @@ components:
           type: string
       type: object
     SegmentFileConfiguration:
+      properties:
+        someConfig:
+          type: string
       type: object
     SegmentFileIDRequest:
       properties:
@@ -453,13 +462,6 @@ components:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
-      type: object
-    SegmentResponse:
-      properties:
-        segments:
-          items:
-            type: object
-          type: array
       type: object
     SegmentedFilesResponse:
       properties:
@@ -482,6 +484,9 @@ components:
           type: string
       type: object
     ValidateOpts:
+      properties:
+        someOption:
+          type: string
       type: object
     ValidationResponse:
       properties:
@@ -490,5 +495,6 @@ components:
             type: string
           type: array
         valid:
+          example: true
           type: boolean
       type: object
