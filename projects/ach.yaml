@@ -33,6 +33,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
+        "201":
+          content:
+            application/json:
+              schema:
+                example: file_id_123
+                type: string
+          description: File created successfully
         "400":
           description: Invalid input
       summary: Create a new ACH file
@@ -81,15 +88,14 @@ paths:
           content:
             application/json:
               schema:
-                description: The ID of the created batch
-                type: string
+                $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
         "201":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
-          description: Batch created successfully
+          description: Batch created
         "400":
           description: Invalid input
         default:
@@ -104,7 +110,7 @@ paths:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
         "204":
-          description: Batch deleted successfully
+          description: Batch deleted
         "400":
           description: Invalid request
         "404":
@@ -155,7 +161,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/File'
-          description: File built successfully
+          description: Built file
         default:
           description: ""
     post:
@@ -196,7 +202,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -212,13 +218,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/File'
-          description: File segmented successfully
+          description: File segmented
         default:
           description: ""
 components:
   schemas:
     ACHFile:
       properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -241,18 +251,8 @@ components:
       properties:
         entries:
           items:
-            properties:
-              amount:
-                example: 100
-                type: number
-              id:
-                example: entry123
-                type: string
-            type: object
+            $ref: '#/components/schemas/EntryDetail'
           type: array
-        id:
-          example: batch123
-          type: string
       type: object
     BuildFileResponse:
       properties:
@@ -269,7 +269,7 @@ components:
           nullable: true
           type: string
         id:
-          description: The ID of the created batch
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -302,12 +302,18 @@ components:
           nullable: true
           type: string
       type: object
+    EntryDetail:
+      properties:
+        amount:
+          type: integer
+        transactionCode:
+          type: integer
+      type: object
     File:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
+        contents:
+          example: file contents here
+          type: string
         id:
           example: file123
           type: string
@@ -380,6 +386,9 @@ components:
           type: string
       type: object
     SegmentFileConfiguration:
+      properties:
+        someConfig:
+          type: string
       type: object
     SegmentFileIDRequest:
       properties:
@@ -416,4 +425,7 @@ components:
           type: string
       type: object
     ValidateOpts:
+      properties:
+        someOption:
+          type: string
       type: object
