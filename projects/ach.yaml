@@ -37,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                example: file_id_123
+                description: The ID of the created file
                 type: string
           description: File created successfully
         "400":
@@ -74,12 +74,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchesResponse'
+                items:
+                  $ref: '#/components/schemas/Batch'
+                type: array
           description: List of batches
         "400":
           description: Invalid request
-        "404":
-          description: File not found
         default:
           description: ""
     post:
@@ -94,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchResponse'
+                $ref: '#/components/schemas/Batch'
           description: Batch created successfully
         "400":
           description: Invalid input
@@ -123,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchResponse'
+                $ref: '#/components/schemas/Batch'
           description: Batch details
         "400":
           description: Invalid request
@@ -160,7 +160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/File'
           description: File built successfully
         default:
           description: ""
@@ -202,7 +202,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: Pong response
+          description: PONG
           headers:
             Content-Type:
               description: text/plain
@@ -217,7 +217,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentResponse'
+                $ref: '#/components/schemas/File'
           description: File segmented successfully
         default:
           description: ""
@@ -243,31 +243,26 @@ components:
         id:
           type: string
       type: object
-    BalanceResponse:
-      properties:
-        balanced:
-          example: true
-          type: boolean
-      type: object
     Batch:
       properties:
-        id:
-          description: Unique identifier for the batch
+        entries:
+          items:
+            properties:
+              amount:
+                example: 100
+                type: number
+              entryID:
+                example: entry123
+                type: string
+            type: object
+          type: array
+        fileID:
+          example: file123
           type: string
-      type: object
-    BatchResponse:
-      properties:
         id:
           example: batch123
           type: string
-        status:
-          example: valid
-          type: string
       type: object
-    BatchesResponse:
-      items:
-        $ref: '#/components/schemas/BatchResponse'
-      type: array
     BuildFileResponse:
       properties:
         error:
@@ -276,23 +271,6 @@ components:
         file:
           $ref: '#/components/schemas/ACHFile'
       type: object
-    CreateBatchRequest:
-      properties:
-        batchHeader:
-          properties:
-            serviceClassCode:
-              example: 200
-              type: integer
-          type: object
-        entries:
-          items:
-            properties:
-              transactionCode:
-                example: 22
-                type: integer
-            type: object
-          type: array
-      type: object
     CreateBatchResponse:
       properties:
         error:
@@ -300,7 +278,7 @@ components:
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -335,14 +313,15 @@ components:
       type: object
     File:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        header:
-          $ref: '#/components/schemas/FileHeader'
+        createdAt:
+          example: "2023-10-01T12:00:00Z"
+          format: date-time
+          type: string
         id:
-          description: Unique identifier for the file
+          example: file123
+          type: string
+        name:
+          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -352,22 +331,6 @@ components:
         immediateOrigin:
           type: string
       type: object
-    FileResponse:
-      properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
-        status:
-          example: valid
-          type: string
-      type: object
-    FilesResponse:
-      items:
-        $ref: '#/components/schemas/FileResponse'
-      type: array
     FlattenBatchesResponse:
       properties:
         error:
@@ -377,12 +340,6 @@ components:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
-      type: object
-    FlattenResponse:
-      properties:
-        flattened:
-          example: true
-          type: boolean
       type: object
     GetBatchResponse:
       properties:
@@ -450,13 +407,6 @@ components:
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
-    SegmentResponse:
-      properties:
-        segments:
-          items:
-            type: string
-          type: array
-      type: object
     SegmentedFilesResponse:
       properties:
         creditFile:
@@ -481,14 +431,4 @@ components:
       properties:
         someOption:
           type: string
-      type: object
-    ValidationResponse:
-      properties:
-        errors:
-          items:
-            type: string
-          type: array
-        valid:
-          example: true
-          type: boolean
       type: object
