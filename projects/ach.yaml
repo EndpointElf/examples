@@ -247,10 +247,6 @@ components:
   schemas:
     ACHFile:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -271,10 +267,13 @@ components:
       type: object
     Batch:
       properties:
-        entries:
-          items:
-            $ref: '#/components/schemas/EntryDetail'
-          type: array
+        created_at:
+          format: date-time
+          type: string
+        id:
+          type: string
+        name:
+          type: string
       type: object
     BatchResponse:
       properties:
@@ -296,19 +295,14 @@ components:
         file:
           $ref: '#/components/schemas/ACHFile'
       type: object
-    CreateBatchRequest:
-      properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
-      type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message if the operation failed
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -331,7 +325,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message if the operation failed
           nullable: true
           type: string
       type: object
@@ -341,20 +335,14 @@ components:
           nullable: true
           type: string
       type: object
-    EntryDetail:
-      properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
-      type: object
     File:
       properties:
+        created_at:
+          format: date-time
+          type: string
         id:
-          example: file123
           type: string
         name:
-          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -391,7 +379,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any
+          description: Error message if the operation failed
           nullable: true
           type: string
       type: object
@@ -402,7 +390,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any
+          description: Error message if the operation failed
           nullable: true
           type: string
       type: object
