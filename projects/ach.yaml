@@ -199,7 +199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: File validation result
+          description: Validation result
         default:
           description: ""
     post:
@@ -224,7 +224,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: Pong response
+          description: PONG
           headers:
             Content-Type:
               description: text/plain
@@ -247,6 +247,10 @@ components:
   schemas:
     ACHFile:
       properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -267,13 +271,10 @@ components:
       type: object
     Batch:
       properties:
-        created_at:
-          format: date-time
-          type: string
-        id:
-          type: string
-        name:
-          type: string
+        entries:
+          items:
+            $ref: '#/components/schemas/EntryDetail'
+          type: array
       type: object
     BatchResponse:
       properties:
@@ -295,14 +296,19 @@ components:
         file:
           $ref: '#/components/schemas/ACHFile'
       type: object
+    CreateBatchRequest:
+      properties:
+        batch:
+          $ref: '#/components/schemas/Batch'
+      type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -325,7 +331,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -335,14 +341,20 @@ components:
           nullable: true
           type: string
       type: object
+    EntryDetail:
+      properties:
+        amount:
+          type: integer
+        transactionCode:
+          type: integer
+      type: object
     File:
       properties:
-        created_at:
-          format: date-time
-          type: string
         id:
+          example: file123
           type: string
         name:
+          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -379,7 +391,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -390,7 +402,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed
+          description: Error message, if any
           nullable: true
           type: string
       type: object
