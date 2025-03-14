@@ -42,8 +42,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteFileResponse'
           description: Confirmation of file deletion
-        "204":
-          description: File deleted successfully
         default:
           description: ""
     get:
@@ -58,7 +56,7 @@ paths:
           description: ""
     post:
       responses:
-        "201":
+        "200":
           content:
             application/json:
               schema:
@@ -96,12 +94,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-          description: Batch created successfully
-        "201":
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
         "400":
@@ -115,9 +107,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteBatchResponse'
-          description: Batch deleted successfully
-        "204":
+                $ref: '#/components/schemas/DeleteResponse'
           description: Batch deleted successfully
         "400":
           description: Invalid request
@@ -199,7 +189,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: Validation result
+          description: File validation result
         default:
           description: ""
     post:
@@ -224,7 +214,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -239,7 +229,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/SegmentResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -247,10 +237,6 @@ components:
   schemas:
     ACHFile:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -269,12 +255,19 @@ components:
         id:
           type: string
       type: object
+    BalanceResponse:
+      properties:
+        balanced:
+          type: boolean
+      type: object
     Batch:
       properties:
-        entries:
-          items:
-            $ref: '#/components/schemas/EntryDetail'
-          type: array
+        id:
+          example: batch123
+          type: string
+        name:
+          example: Batch 1
+          type: string
       type: object
     BatchResponse:
       properties:
@@ -295,11 +288,6 @@ components:
           type: string
         file:
           $ref: '#/components/schemas/ACHFile'
-      type: object
-    CreateBatchRequest:
-      properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
       type: object
     CreateBatchResponse:
       properties:
@@ -341,12 +329,11 @@ components:
           nullable: true
           type: string
       type: object
-    EntryDetail:
+    DeleteResponse:
       properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
+        message:
+          example: Resource deleted successfully
+          type: string
       type: object
     File:
       properties:
@@ -385,6 +372,11 @@ components:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
+      type: object
+    FlattenResponse:
+      properties:
+        flattened:
+          type: boolean
       type: object
     GetBatchResponse:
       properties:
@@ -434,9 +426,6 @@ components:
           type: string
       type: object
     SegmentFileConfiguration:
-      properties:
-        someConfig:
-          type: string
       type: object
     SegmentFileIDRequest:
       properties:
@@ -451,6 +440,13 @@ components:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
+      type: object
+    SegmentResponse:
+      properties:
+        segments:
+          items:
+            type: string
+          type: array
       type: object
     SegmentedFilesResponse:
       properties:
@@ -473,9 +469,6 @@ components:
           type: string
       type: object
     ValidateOpts:
-      properties:
-        someOption:
-          type: string
       type: object
     ValidationResponse:
       properties:
