@@ -25,6 +25,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
+        required: true
       responses:
         "200":
           content:
@@ -239,7 +240,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentResponse'
+                $ref: '#/components/schemas/FileResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -265,13 +266,11 @@ components:
         id:
           type: string
       type: object
-    BalanceResponse:
-      properties:
-        balanced:
-          type: boolean
-      type: object
     Batch:
       properties:
+        created_at:
+          format: date-time
+          type: string
         id:
           type: string
         name:
@@ -300,11 +299,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -327,7 +326,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -376,17 +375,12 @@ components:
         id:
           type: string
       type: object
-    FlattenResponse:
-      properties:
-        flattened:
-          type: boolean
-      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -397,7 +391,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -447,13 +441,6 @@ components:
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
-    SegmentResponse:
-      properties:
-        segments:
-          items:
-            type: string
-          type: array
-      type: object
     SegmentedFilesResponse:
       properties:
         creditFile:
@@ -476,8 +463,57 @@ components:
       type: object
     ValidateOpts:
       properties:
-        someOption:
-          type: string
+        AllowInvalidAmounts:
+          description: Allow invalid amounts.
+          type: boolean
+        AllowInvalidCheckDigit:
+          description: Allow invalid check digit.
+          type: boolean
+        AllowMissingFileControl:
+          description: Allow missing file control.
+          type: boolean
+        AllowMissingFileHeader:
+          description: Allow missing file header.
+          type: boolean
+        AllowUnorderedBatchNumbers:
+          description: Allow unordered batch numbers.
+          type: boolean
+        AllowZeroBatches:
+          description: Allow zero batches.
+          type: boolean
+        AllowZeroEntryAmount:
+          description: Allow zero entry amount.
+          type: boolean
+        BypassCompanyIdentificationMatch:
+          description: Bypass company identification match.
+          type: boolean
+        BypassDestinationValidation:
+          description: Bypass destination validation.
+          type: boolean
+        BypassOriginValidation:
+          description: Bypass origin validation.
+          type: boolean
+        CustomReturnCodes:
+          description: Allow custom return codes.
+          type: boolean
+        CustomTraceNumbers:
+          description: Allow custom trace numbers.
+          type: boolean
+        PreserveSpaces:
+          description: Preserve spaces in fields.
+          type: boolean
+        RequireABAOrigin:
+          description: Require ABA origin.
+          type: boolean
+        SkipAll:
+          description: Skip all validations.
+          type: boolean
+        UnequalAddendaCounts:
+          description: Allow unequal addenda counts.
+          type: boolean
+        UnequalServiceClassCode:
+          description: Allow unequal service class code.
+          type: boolean
       type: object
     ValidationResponse:
       properties:
