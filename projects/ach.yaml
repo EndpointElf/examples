@@ -33,13 +33,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-        "201":
-          content:
-            application/json:
-              schema:
-                example: file_id_123
-                type: string
-          description: File created successfully
         "400":
           description: Invalid input
       summary: Create a new ACH file
@@ -76,6 +69,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -84,7 +79,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
+                description: The ID of the created batch
+                type: string
           description: Batch created successfully
         "201":
           content:
@@ -107,6 +103,8 @@ paths:
           description: Batch deleted successfully
         "204":
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         "404":
           description: Batch not found
         default:
@@ -119,6 +117,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         "404":
           description: Batch not found
         default:
@@ -176,22 +176,10 @@ paths:
   /files/{id}/validate:
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationResponse'
-          description: File validation result
         default:
           description: ""
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidateFileResponse'
-          description: Validation result
         default:
           description: ""
   /ping:
@@ -261,7 +249,7 @@ components:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/Entry'
+            $ref: '#/components/schemas/EntryDetail'
           type: array
       type: object
     BatchResponse:
@@ -294,7 +282,7 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
@@ -321,7 +309,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -331,7 +319,7 @@ components:
           nullable: true
           type: string
       type: object
-    Entry:
+    EntryDetail:
       properties:
         amount:
           type: integer
@@ -340,15 +328,18 @@ components:
       type: object
     File:
       properties:
-        batches:
+        Batches:
           items:
             $ref: '#/components/schemas/Batch'
           type: array
-        header:
+        Header:
           $ref: '#/components/schemas/FileHeader'
-        id:
+        ID:
           description: Unique identifier for the file
           type: string
+      required:
+      - ID
+      - Header
       type: object
     FileHeader:
       properties:
@@ -391,7 +382,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -402,7 +393,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
