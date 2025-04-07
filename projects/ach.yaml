@@ -24,8 +24,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FileHeader'
-        required: true
+              $ref: '#/components/schemas/CreateFileRequest'
       responses:
         "200":
           content:
@@ -33,27 +32,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-        "201":
-          content:
-            application/json:
-              schema:
-                example: file_id_123
-                type: string
-          description: File created successfully
-        "400":
-          description: Invalid input
       summary: Create a new ACH file
   /files/{fileID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponse'
+          description: Confirmation of file deletion
+        "204":
+          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponse'
+          description: The requested ACH file
         default:
           description: ""
     post:
       responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -70,19 +80,59 @@ paths:
   /files/{fileID}/batches:
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchesResponse'
+          description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBatchResponse'
+          description: Batch created successfully
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+          description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBatchResponse'
+          description: Batch deleted successfully
+        "204":
+          description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+          description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -133,6 +183,12 @@ paths:
   /files/{id}/contents:
     get:
       responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -183,7 +239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/SegmentResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -209,6 +265,12 @@ components:
         id:
           type: string
       type: object
+    BalanceResponse:
+      properties:
+        balanced:
+          example: true
+          type: boolean
+      type: object
     Batch:
       description: ACH Batch object
       properties:
@@ -221,27 +283,16 @@ components:
             type: object
           type: array
       type: object
-    BatchHeader:
-      properties:
-        id:
-          description: Unique identifier for the batch header
-          type: string
-        serviceClassCode:
-          description: Service class code
-          type: integer
-      type: object
     BatchResponse:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        id:
+          example: batch123
+          type: string
       type: object
     BatchesResponse:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/BatchResponse'
+      type: array
     BuildFileResponse:
       properties:
         error:
@@ -252,8 +303,12 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        batchHeader:
+          properties:
+            serviceClassCode:
+              example: 200
+              type: integer
+          type: object
       type: object
     CreateBatchResponse:
       properties:
@@ -295,15 +350,6 @@ components:
           nullable: true
           type: string
       type: object
-    File:
-      properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
-      type: object
     FileHeader:
       properties:
         immediateDestination:
@@ -313,16 +359,17 @@ components:
       type: object
     FileResponse:
       properties:
-        file:
-          $ref: '#/components/schemas/File'
+        id:
+          example: file123
+          type: string
+        name:
+          example: example.ach
+          type: string
       type: object
     FilesResponse:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/File'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/FileResponse'
+      type: array
     FlattenBatchesResponse:
       properties:
         error:
@@ -332,6 +379,12 @@ components:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
+      type: object
+    FlattenResponse:
+      properties:
+        flattened:
+          example: true
+          type: boolean
       type: object
     GetBatchResponse:
       properties:
@@ -399,6 +452,13 @@ components:
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
+    SegmentResponse:
+      properties:
+        segments:
+          items:
+            type: string
+          type: array
+      type: object
     SegmentedFilesResponse:
       properties:
         creditFile:
@@ -431,5 +491,6 @@ components:
             type: string
           type: array
         valid:
+          example: true
           type: boolean
       type: object
