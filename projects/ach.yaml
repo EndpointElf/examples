@@ -24,7 +24,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FileHeader'
+              $ref: '#/components/schemas/CreateFileRequest'
         required: true
       responses:
         "200":
@@ -33,27 +33,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-        "201":
-          content:
-            application/json:
-              schema:
-                example: file_id_123
-                type: string
-          description: File created successfully
-        "400":
-          description: Invalid input
       summary: Create a new ACH file
   /files/{fileID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponse'
+          description: Confirmation of file deletion
+        "204":
+          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponse'
+          description: The requested ACH file
         default:
           description: ""
     post:
       responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -95,7 +106,7 @@ paths:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
         "400":
-          description: Invalid input
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -111,8 +122,6 @@ paths:
           description: Batch deleted successfully
         "400":
           description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
     get:
@@ -125,8 +134,6 @@ paths:
           description: Batch details
         "400":
           description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -177,6 +184,15 @@ paths:
   /files/{id}/contents:
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileContentsResponse'
+            text/plain:
+              schema:
+                type: string
+          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -187,7 +203,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: File validation result
+          description: Validation result
         default:
           description: ""
     post:
@@ -212,7 +228,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: Pong response
+          description: PONG
           headers:
             Content-Type:
               description: text/plain
@@ -227,7 +243,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SegmentResponse'
+                $ref: '#/components/schemas/FileResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -253,36 +269,25 @@ components:
         id:
           type: string
       type: object
-    BalanceResponse:
-      properties:
-        balanced:
-          example: true
-          type: boolean
-      type: object
     Batch:
+      description: ACH Batch object
       properties:
-        header:
-          $ref: '#/components/schemas/BatchHeader'
-        id:
-          description: Unique identifier for the batch
-          type: string
-      type: object
-    BatchHeader:
-      properties:
-        id:
-          description: Unique identifier for the batch header
-          type: string
-        serviceClassCode:
-          description: Service class code
-          type: integer
+        batchHeader:
+          description: Batch header details
+          type: object
+        entries:
+          items:
+            description: Entry details
+            type: object
+          type: array
       type: object
     BatchResponse:
       properties:
         id:
           example: batch123
           type: string
-        type:
-          example: PPD
+        status:
+          example: created
           type: string
       type: object
     BatchesResponse:
@@ -299,18 +304,18 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batchType:
-          example: PPD
+        batchName:
+          example: batch1
           type: string
       type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -333,7 +338,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -343,16 +348,10 @@ components:
           nullable: true
           type: string
       type: object
-    File:
+    ErrorResponse:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        header:
-          $ref: '#/components/schemas/FileHeader'
-        id:
-          description: Unique identifier for the file
+        error:
+          example: Invalid request
           type: string
       type: object
     FileHeader:
@@ -367,8 +366,8 @@ components:
         id:
           example: file123
           type: string
-        name:
-          example: example.ach
+        status:
+          example: created
           type: string
       type: object
     FilesResponse:
@@ -385,18 +384,12 @@ components:
         id:
           type: string
       type: object
-    FlattenResponse:
-      properties:
-        flattened:
-          example: true
-          type: boolean
-      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -407,7 +400,13 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any
+          description: Error message, if any
+          nullable: true
+          type: string
+      type: object
+    GetFileContentsResponse:
+      properties:
+        error:
           nullable: true
           type: string
       type: object
@@ -439,9 +438,6 @@ components:
           type: string
       type: object
     SegmentFileConfiguration:
-      properties:
-        someConfig:
-          type: string
       type: object
     SegmentFileIDRequest:
       properties:
@@ -456,13 +452,6 @@ components:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
-      type: object
-    SegmentResponse:
-      properties:
-        segments:
-          items:
-            type: string
-          type: array
       type: object
     SegmentedFilesResponse:
       properties:
@@ -485,9 +474,6 @@ components:
           type: string
       type: object
     ValidateOpts:
-      properties:
-        someOption:
-          type: string
       type: object
     ValidationResponse:
       properties:
