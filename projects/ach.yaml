@@ -25,7 +25,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
-        required: true
       responses:
         "200":
           content:
@@ -186,9 +185,6 @@ paths:
       responses:
         "200":
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFileContentsResponse'
             text/plain:
               schema:
                 type: string
@@ -203,7 +199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: Validation result
+          description: File validation result
         default:
           description: ""
     post:
@@ -228,7 +224,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -243,7 +239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileResponse'
+                $ref: '#/components/schemas/SegmentResponse'
           description: File segmented successfully
         default:
           description: ""
@@ -269,25 +265,42 @@ components:
         id:
           type: string
       type: object
+    BalanceResponse:
+      properties:
+        balanced:
+          type: boolean
+      type: object
     Batch:
       description: ACH Batch object
       properties:
         batchHeader:
           description: Batch header details
+          properties:
+            companyName:
+              example: Test Company
+              type: string
+            serviceClassCode:
+              example: 200
+              type: integer
           type: object
         entries:
           items:
             description: Entry details
+            properties:
+              amount:
+                example: 1000
+                type: integer
+              transactionCode:
+                example: 22
+                type: integer
             type: object
           type: array
       type: object
     BatchResponse:
       properties:
         id:
-          example: batch123
           type: string
         status:
-          example: created
           type: string
       type: object
     BatchesResponse:
@@ -304,18 +317,21 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batchName:
-          example: batch1
-          type: string
+        batchHeader:
+          type: object
+        entries:
+          items:
+            type: object
+          type: array
       type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -338,7 +354,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -346,12 +362,6 @@ components:
       properties:
         error:
           nullable: true
-          type: string
-      type: object
-    ErrorResponse:
-      properties:
-        error:
-          example: Invalid request
           type: string
       type: object
     FileHeader:
@@ -364,10 +374,10 @@ components:
     FileResponse:
       properties:
         id:
-          example: file123
+          type: string
+        name:
           type: string
         status:
-          example: created
           type: string
       type: object
     FilesResponse:
@@ -384,12 +394,17 @@ components:
         id:
           type: string
       type: object
+    FlattenResponse:
+      properties:
+        flattened:
+          type: boolean
+      type: object
     GetBatchResponse:
       properties:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -400,13 +415,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
-          nullable: true
-          type: string
-      type: object
-    GetFileContentsResponse:
-      properties:
-        error:
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -438,6 +447,9 @@ components:
           type: string
       type: object
     SegmentFileConfiguration:
+      properties:
+        someConfig:
+          type: string
       type: object
     SegmentFileIDRequest:
       properties:
@@ -452,6 +464,13 @@ components:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
+      type: object
+    SegmentResponse:
+      properties:
+        segments:
+          items:
+            type: object
+          type: array
       type: object
     SegmentedFilesResponse:
       properties:
@@ -474,6 +493,9 @@ components:
           type: string
       type: object
     ValidateOpts:
+      properties:
+        someOption:
+          type: string
       type: object
     ValidationResponse:
       properties:
@@ -482,6 +504,5 @@ components:
             type: string
           type: array
         valid:
-          example: true
           type: boolean
       type: object
