@@ -25,6 +25,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
+        required: true
       responses:
         "200":
           content:
@@ -199,7 +200,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: Validation result
+          description: File validation result
         default:
           description: ""
     post:
@@ -224,7 +225,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -268,29 +269,33 @@ components:
     BalanceResponse:
       properties:
         balanced:
+          example: true
           type: boolean
       type: object
     Batch:
       properties:
-        id:
-          example: batch123
-          type: string
-        name:
-          example: Batch 1
-          type: string
+        batchHeader:
+          description: Header information for the batch
+          type: object
+        entries:
+          items:
+            description: Entry details within the batch
+            type: object
+          type: array
+      required:
+      - batchHeader
+      - entries
       type: object
     BatchResponse:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        id:
+          example: batch123
+          type: string
       type: object
     BatchesResponse:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/BatchResponse'
+      type: array
     BuildFileResponse:
       properties:
         error:
@@ -301,8 +306,12 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batch:
-          $ref: '#/components/schemas/Batch'
+        batchHeader:
+          properties:
+            serviceClassCode:
+              example: 200
+              type: integer
+          type: object
       type: object
     CreateBatchResponse:
       properties:
@@ -311,7 +320,7 @@ components:
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -344,15 +353,6 @@ components:
           nullable: true
           type: string
       type: object
-    File:
-      properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
-      type: object
     FileHeader:
       properties:
         immediateDestination:
@@ -362,16 +362,17 @@ components:
       type: object
     FileResponse:
       properties:
-        file:
-          $ref: '#/components/schemas/File'
+        id:
+          example: file123
+          type: string
+        name:
+          example: example.ach
+          type: string
       type: object
     FilesResponse:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/File'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/FileResponse'
+      type: array
     FlattenBatchesResponse:
       properties:
         error:
@@ -385,6 +386,7 @@ components:
     FlattenResponse:
       properties:
         flattened:
+          example: true
           type: boolean
       type: object
     GetBatchResponse:
@@ -474,11 +476,6 @@ components:
           nullable: true
           type: string
       type: object
-    ValidateFileRequest:
-      properties:
-        opts:
-          $ref: '#/components/schemas/ValidateOpts'
-      type: object
     ValidateFileResponse:
       properties:
         error:
@@ -497,5 +494,6 @@ components:
             type: string
           type: array
         valid:
+          example: true
           type: boolean
       type: object
