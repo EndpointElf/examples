@@ -200,7 +200,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationResponse'
-          description: File validation result
+          description: Validation result
         default:
           description: ""
     post:
@@ -248,6 +248,10 @@ components:
   schemas:
     ACHFile:
       properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -269,33 +273,27 @@ components:
     BalanceResponse:
       properties:
         balanced:
-          example: true
           type: boolean
       type: object
     Batch:
       properties:
-        batchHeader:
-          description: Header information for the batch
-          type: object
         entries:
           items:
-            description: Entry details within the batch
-            type: object
+            $ref: '#/components/schemas/Entry'
           type: array
-      required:
-      - batchHeader
-      - entries
       type: object
     BatchResponse:
       properties:
-        id:
-          example: batch123
-          type: string
+        batch:
+          $ref: '#/components/schemas/Batch'
       type: object
     BatchesResponse:
-      items:
-        $ref: '#/components/schemas/BatchResponse'
-      type: array
+      properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+      type: object
     BuildFileResponse:
       properties:
         error:
@@ -306,12 +304,8 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batchHeader:
-          properties:
-            serviceClassCode:
-              example: 200
-              type: integer
-          type: object
+        batch:
+          $ref: '#/components/schemas/Batch'
       type: object
     CreateBatchResponse:
       properties:
@@ -320,7 +314,7 @@ components:
           nullable: true
           type: string
         id:
-          description: The ID of the created batch
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -353,6 +347,22 @@ components:
           nullable: true
           type: string
       type: object
+    Entry:
+      properties:
+        amount:
+          type: integer
+        transactionCode:
+          type: integer
+      type: object
+    File:
+      properties:
+        id:
+          example: file123
+          type: string
+        name:
+          example: example.ach
+          type: string
+      type: object
     FileHeader:
       properties:
         immediateDestination:
@@ -362,17 +372,16 @@ components:
       type: object
     FileResponse:
       properties:
-        id:
-          example: file123
-          type: string
-        name:
-          example: example.ach
-          type: string
+        file:
+          $ref: '#/components/schemas/File'
       type: object
     FilesResponse:
-      items:
-        $ref: '#/components/schemas/FileResponse'
-      type: array
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
     FlattenBatchesResponse:
       properties:
         error:
@@ -386,7 +395,6 @@ components:
     FlattenResponse:
       properties:
         flattened:
-          example: true
           type: boolean
       type: object
     GetBatchResponse:
@@ -494,6 +502,5 @@ components:
             type: string
           type: array
         valid:
-          example: true
           type: boolean
       type: object
