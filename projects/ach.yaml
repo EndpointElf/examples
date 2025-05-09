@@ -25,7 +25,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
-        required: true
       responses:
         "200":
           content:
@@ -268,12 +267,11 @@ components:
       type: object
     Batch:
       properties:
-        created_at:
-          format: date-time
-          type: string
         id:
+          example: batch123
           type: string
         name:
+          example: batch1
           type: string
       type: object
     BatchResponse:
@@ -296,6 +294,11 @@ components:
         file:
           $ref: '#/components/schemas/ACHFile'
       type: object
+    CreateBatchRequest:
+      properties:
+        batch:
+          $ref: '#/components/schemas/Batch'
+      type: object
     CreateBatchResponse:
       properties:
         error:
@@ -303,7 +306,7 @@ components:
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -338,12 +341,11 @@ components:
       type: object
     File:
       properties:
-        created_at:
-          format: date-time
-          type: string
         id:
+          example: file123
           type: string
         name:
+          example: example.ach
           type: string
       type: object
     FileHeader:
