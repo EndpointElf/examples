@@ -37,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                example: file_id
+                description: The ID of the created file
                 type: string
           description: File created successfully
         "400":
@@ -64,7 +64,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
+          description: Balanced file ID
         default:
           description: ""
   /files/{fileID}/batches:
@@ -77,7 +77,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Batch'
                 type: array
-          description: A list of batches
+          description: A list of batches in the file
         "400":
           description: Invalid request
         default:
@@ -94,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                example: batch_id
+                description: The ID of the created batch
                 type: string
           description: Batch created successfully
         "400":
@@ -140,7 +140,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
+          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -151,7 +151,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
+          description: Segmented files
         default:
           description: ""
   /files/{id}/build:
@@ -170,7 +170,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
@@ -215,10 +215,6 @@ components:
   schemas:
     ACHFile:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -239,10 +235,9 @@ components:
       type: object
     Batch:
       properties:
-        entries:
-          items:
-            $ref: '#/components/schemas/EntryDetail'
-          type: array
+        id:
+          description: Unique identifier for the batch
+          type: string
       type: object
     BuildFileResponse:
       properties:
@@ -255,11 +250,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any error occurred.
+          description: Error message if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch.
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -282,7 +277,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any error occurred.
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -291,13 +286,6 @@ components:
         error:
           nullable: true
           type: string
-      type: object
-    EntryDetail:
-      properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
       type: object
     File:
       properties:
@@ -333,7 +321,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any error occurred.
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -344,7 +332,13 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any error occurred.
+          description: Error message if any
+          nullable: true
+          type: string
+      type: object
+    GetFileContentsResponse:
+      properties:
+        error:
           nullable: true
           type: string
       type: object
