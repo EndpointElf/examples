@@ -66,8 +66,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchesResponse'
           description: List of batches
-        "400":
-          description: Invalid request
         default:
           description: ""
     post:
@@ -78,8 +76,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
-        "400":
-          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -91,8 +87,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
-        "400":
-          description: Invalid request
         default:
           description: ""
     get:
@@ -103,8 +97,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchResponse'
           description: Batch details
-        "400":
-          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -221,10 +213,10 @@ components:
           description: Header information for the batch
           properties:
             companyName:
-              example: Test Company
+              description: Company name
               type: string
             serviceClassCode:
-              example: 200
+              description: Service class code
               type: integer
           type: object
         entries:
@@ -232,10 +224,10 @@ components:
             description: Entry detail record
             properties:
               amount:
-                example: 1000
+                description: Transaction amount
                 type: integer
               transactionCode:
-                example: 22
+                description: Transaction code
                 type: integer
             type: object
           type: array
@@ -286,6 +278,12 @@ components:
       properties:
         error:
           nullable: true
+          type: string
+      type: object
+    ErrorResponse:
+      properties:
+        error:
+          description: A message describing the error.
           type: string
       type: object
     FileHeader:
@@ -394,5 +392,11 @@ components:
     ValidateOpts:
       properties:
         someOption:
+          type: string
+      type: object
+    ValidationResponse:
+      properties:
+        message:
+          description: A message indicating the result of the validation.
           type: string
       type: object
