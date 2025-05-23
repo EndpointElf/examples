@@ -24,7 +24,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateFileRequest'
+              $ref: '#/components/schemas/FileHeader'
+        required: true
       responses:
         "200":
           content:
@@ -32,6 +33,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
+        "201":
+          content:
+            application/json:
+              schema:
+                example: file_id
+                type: string
+          description: File created successfully
+        "400":
+          description: Invalid input
       summary: Create a new ACH file
   /files/{fileID}:
     delete:
@@ -54,7 +64,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
+          description: Balanced file ID
         default:
           description: ""
   /files/{fileID}/batches:
@@ -64,8 +74,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBatchesResponse'
-          description: List of batches
+                items:
+                  $ref: '#/components/schemas/Batch'
+                type: array
+          description: A list of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -76,6 +90,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
+        "201":
+          content:
+            application/json:
+              schema:
+                example: batch_id
+                type: string
+          description: Batch created successfully
+        "400":
+          description: Invalid input
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -87,6 +110,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
+        "204":
+          description: Batch deleted successfully
+        "400":
+          description: Invalid request
+        "404":
+          description: Batch not found
         default:
           description: ""
     get:
@@ -95,8 +124,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBatchResponse'
-          description: Batch details
+                $ref: '#/components/schemas/Batch'
+          description: The requested batch
+        "400":
+          description: Invalid request
+        "404":
+          description: Batch not found
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -107,7 +140,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
+          description: Flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -118,7 +151,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
+          description: Segmented files
         default:
           description: ""
   /files/{id}/build:
@@ -141,12 +174,6 @@ paths:
   /files/{id}/contents:
     get:
       responses:
-        "200":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -207,30 +234,13 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch object
       properties:
-        batchHeader:
-          description: Header information for the batch
-          properties:
-            companyName:
-              description: Company name
-              type: string
-            serviceClassCode:
-              description: Service class code
-              type: integer
+        header:
+          description: Batch header details
           type: object
-        entries:
-          items:
-            description: Entry detail record
-            properties:
-              amount:
-                description: Transaction amount
-                type: integer
-              transactionCode:
-                description: Transaction code
-                type: integer
-            type: object
-          type: array
+        id:
+          description: Unique identifier for the batch
+          type: string
       type: object
     BuildFileResponse:
       properties:
@@ -243,11 +253,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch.
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -270,7 +280,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -283,7 +293,19 @@ components:
     ErrorResponse:
       properties:
         error:
-          description: A message describing the error.
+          example: Invalid input data.
+          type: string
+      type: object
+    File:
+      properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+        header:
+          $ref: '#/components/schemas/FileHeader'
+        id:
+          description: Unique identifier for the file
           type: string
       type: object
     FileHeader:
@@ -308,7 +330,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -319,7 +341,13 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
+          nullable: true
+          type: string
+      type: object
+    GetFileContentsResponse:
+      properties:
+        error:
           nullable: true
           type: string
       type: object
@@ -391,12 +419,64 @@ components:
       type: object
     ValidateOpts:
       properties:
-        someOption:
-          type: string
+        allowInvalidAmounts:
+          description: Allow invalid amounts.
+          type: boolean
+        allowInvalidCheckDigit:
+          description: Allow invalid check digit.
+          type: boolean
+        allowMissingFileControl:
+          description: Allow missing file control.
+          type: boolean
+        allowMissingFileHeader:
+          description: Allow missing file header.
+          type: boolean
+        allowSpecialCharacters:
+          description: Allow special characters.
+          type: boolean
+        allowUnorderedBatchNumbers:
+          description: Allow unordered batch numbers.
+          type: boolean
+        allowZeroBatches:
+          description: Allow zero batches.
+          type: boolean
+        allowZeroEntryAmount:
+          description: Allow zero entry amount.
+          type: boolean
+        bypassCompanyIdentificationMatch:
+          description: Bypass company identification match.
+          type: boolean
+        bypassDestinationValidation:
+          description: Bypass destination validation.
+          type: boolean
+        bypassOriginValidation:
+          description: Bypass origin validation.
+          type: boolean
+        customReturnCodes:
+          description: Allow custom return codes.
+          type: boolean
+        customTraceNumbers:
+          description: Allow custom trace numbers.
+          type: boolean
+        preserveSpaces:
+          description: Preserve spaces in fields.
+          type: boolean
+        requireABAOrigin:
+          description: Require ABA origin.
+          type: boolean
+        skipAll:
+          description: Skip all validations.
+          type: boolean
+        unequalAddendaCounts:
+          description: Allow unequal addenda counts.
+          type: boolean
+        unequalServiceClassCode:
+          description: Allow unequal service class code.
+          type: boolean
       type: object
     ValidationResponse:
       properties:
         message:
-          description: A message indicating the result of the validation.
+          example: Validation options applied successfully.
           type: string
       type: object
