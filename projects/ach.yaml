@@ -37,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                example: file_id_123
+                description: The ID of the created file
                 type: string
           description: File created successfully
         "400":
@@ -77,7 +77,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Batch'
                 type: array
-          description: A list of batches
+          description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -92,9 +94,8 @@ paths:
           content:
             application/json:
               schema:
-                example: batch_id_123
-                type: string
-          description: Batch created successfully
+                $ref: '#/components/schemas/Batch'
+          description: Batch created
         "400":
           description: Invalid input
         default:
@@ -109,7 +110,9 @@ paths:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
         "204":
-          description: Batch deleted successfully
+          description: Batch deleted
+        "400":
+          description: Invalid request
         "404":
           description: Batch not found
         default:
@@ -121,7 +124,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
-          description: The requested batch
+          description: Batch details
+        "400":
+          description: Invalid request
         "404":
           description: Batch not found
         default:
@@ -151,6 +156,12 @@ paths:
   /files/{id}/build:
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: Built file
         default:
           description: ""
     post:
@@ -173,10 +184,22 @@ paths:
   /files/{id}/validate:
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+          description: Validation result
         default:
           description: ""
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateFileResponse'
+          description: Validation result
         default:
           description: ""
   /ping:
@@ -187,6 +210,11 @@ paths:
             application/json:
               schema:
                 type: string
+            text/plain:
+              schema:
+                example: PONG
+                type: string
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -197,6 +225,12 @@ paths:
   /segment:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          description: Segmented file
         default:
           description: ""
 components:
@@ -223,14 +257,11 @@ components:
       type: object
     Batch:
       properties:
-        control:
-          description: Batch control details
-          type: object
-        header:
-          description: Batch header details
-          type: object
         id:
-          description: Unique identifier for the batch
+          example: batch123
+          type: string
+        name:
+          example: batch name
           type: string
       type: object
     BuildFileResponse:
@@ -283,14 +314,14 @@ components:
       type: object
     File:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        header:
-          $ref: '#/components/schemas/FileHeader'
+        contents:
+          example: file contents here
+          type: string
         id:
-          description: Unique identifier for the file
+          example: file123
+          type: string
+        name:
+          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -400,4 +431,14 @@ components:
       properties:
         someOption:
           type: string
+      type: object
+    ValidationResult:
+      properties:
+        errors:
+          items:
+            type: string
+          type: array
+        valid:
+          example: true
+          type: boolean
       type: object
