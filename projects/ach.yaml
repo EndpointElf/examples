@@ -32,7 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-      summary: Create a new ACH file
+      summary: Create a new file
   /files/{fileID}:
     delete:
       responses:
@@ -115,7 +115,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: Flattened ACH file
+          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -145,7 +145,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
@@ -228,8 +228,9 @@ components:
               type: integer
           type: object
         entries:
+          description: Entries in the batch
           items:
-            description: Entry detail record
+            description: Entry detail
             properties:
               amount:
                 description: Transaction amount
