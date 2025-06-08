@@ -10,29 +10,8 @@ paths:
   /files:
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetFilesResponse'
-          description: A list of ACH files
         default:
           description: ""
-    post:
-      operationId: createFile
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateFileRequest'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateFileResponse'
-          description: The created ACH file
-      summary: Create a new ACH file
   /files/{fileID}:
     delete:
       responses:
@@ -49,12 +28,6 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
@@ -110,23 +83,11 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -134,27 +95,9 @@ paths:
       responses:
         default:
           description: ""
-    post:
-      operationId: buildFile
-      parameters:
-      - $ref: '#/components/parameters/FileID'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuildFileResponse'
-          description: The built ACH file
-      summary: Build a specific ACH file
   /files/{id}/contents:
     get:
       responses:
-        "200":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -164,12 +107,6 @@ paths:
           description: ""
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidateFileResponse'
-          description: Validation result
         default:
           description: ""
   /ping:
@@ -194,107 +131,47 @@ paths:
           description: ""
 components:
   schemas:
-    ACHFile:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        header:
-          $ref: '#/components/schemas/FileHeader'
-        id:
-          type: string
-      type: object
-    BalanceFileRequest:
-      properties:
-        offset:
-          $ref: '#/components/schemas/Offset'
-      type: object
-    BalanceFileResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        id:
-          type: string
-      type: object
     Batch:
+      description: ACH Batch object
       properties:
+        batchHeader:
+          description: Header information for the batch
+          properties:
+            companyName:
+              example: Test Company
+              type: string
+            serviceClassCode:
+              example: 200
+              type: integer
+          type: object
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            description: Entry detail record
+            properties:
+              amount:
+                example: 1000
+                type: integer
+              transactionCode:
+                example: 22
+                type: integer
+            type: object
           type: array
-      type: object
-    BuildFileResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        file:
-          $ref: '#/components/schemas/ACHFile'
       type: object
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
           description: ID of the created batch
           type: string
       type: object
-    CreateFileRequest:
-      properties:
-        file:
-          $ref: '#/components/schemas/ACHFile'
-        validateOpts:
-          $ref: '#/components/schemas/ValidateOpts'
-      type: object
-    CreateFileResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        file:
-          $ref: '#/components/schemas/ACHFile'
-        id:
-          type: string
-      type: object
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
-          type: string
-      type: object
-    DeleteFileResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-      type: object
-    EntryDetail:
-      properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
-      type: object
-    FileHeader:
-      properties:
-        immediateDestination:
-          type: string
-        immediateOrigin:
-          type: string
-      type: object
-    FlattenBatchesResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        file:
-          $ref: '#/components/schemas/ACHFile'
-        id:
           type: string
       type: object
     GetBatchResponse:
@@ -302,7 +179,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -313,78 +190,86 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
-          nullable: true
-          type: string
-      type: object
-    GetFileResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        file:
-          $ref: '#/components/schemas/ACHFile'
-      type: object
-    GetFilesResponse:
-      properties:
-        error:
-          nullable: true
-          type: string
-        files:
-          items:
-            $ref: '#/components/schemas/ACHFile'
-          type: array
-      type: object
-    Offset:
-      properties:
-        accountNumber:
-          type: string
-        accountType:
-          type: string
-        routingNumber:
-          type: string
-      type: object
-    SegmentFileConfiguration:
-      properties:
-        someConfig:
-          type: string
-      type: object
-    SegmentFileIDRequest:
-      properties:
-        opts:
-          $ref: '#/components/schemas/SegmentFileConfiguration'
-      type: object
-    SegmentFileRequest:
-      properties:
-        file:
-          $ref: '#/components/schemas/ACHFile'
-        opts:
-          $ref: '#/components/schemas/SegmentFileConfiguration'
-        validateOpts:
-          $ref: '#/components/schemas/ValidateOpts'
-      type: object
-    SegmentedFilesResponse:
-      properties:
-        creditFile:
-          $ref: '#/components/schemas/ACHFile'
-        creditFileID:
-          type: string
-        debitFile:
-          $ref: '#/components/schemas/ACHFile'
-        debitFileID:
-          type: string
-        error:
-          nullable: true
-          type: string
-      type: object
-    ValidateFileResponse:
-      properties:
-        error:
+          description: Error message if any
           nullable: true
           type: string
       type: object
     ValidateOpts:
       properties:
-        someOption:
-          type: string
+        allowEmptyIndividualName:
+          default: false
+          description: Allow empty individual name
+          type: boolean
+        allowInvalidAmounts:
+          default: false
+          description: Allow invalid amounts
+          type: boolean
+        allowInvalidCheckDigit:
+          default: false
+          description: Allow invalid check digit
+          type: boolean
+        allowMissingFileControl:
+          default: false
+          description: Allow missing file control
+          type: boolean
+        allowMissingFileHeader:
+          default: false
+          description: Allow missing file header
+          type: boolean
+        allowSpecialCharacters:
+          default: false
+          description: Allow special characters
+          type: boolean
+        allowUnorderedBatchNumbers:
+          default: false
+          description: Allow unordered batch numbers
+          type: boolean
+        allowZeroBatches:
+          default: false
+          description: Allow zero batches
+          type: boolean
+        allowZeroEntryAmount:
+          default: false
+          description: Allow zero entry amount
+          type: boolean
+        bypassCompanyIdentificationMatch:
+          default: false
+          description: Bypass company identification match
+          type: boolean
+        bypassDestinationValidation:
+          default: false
+          description: Bypass destination validation
+          type: boolean
+        bypassOriginValidation:
+          default: false
+          description: Bypass origin validation
+          type: boolean
+        customReturnCodes:
+          default: false
+          description: Allow custom return codes
+          type: boolean
+        customTraceNumbers:
+          default: false
+          description: Allow custom trace numbers
+          type: boolean
+        preserveSpaces:
+          default: false
+          description: Preserve spaces in fields
+          type: boolean
+        requireABAOrigin:
+          default: false
+          description: Require ABA origin
+          type: boolean
+        skipAll:
+          default: false
+          description: Skip all validations
+          type: boolean
+        unequalAddendaCounts:
+          default: false
+          description: Allow unequal addenda counts
+          type: boolean
+        unequalServiceClassCode:
+          default: false
+          description: Allow unequal service class code
+          type: boolean
       type: object
