@@ -251,11 +251,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any.
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch.
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -278,7 +278,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -286,17 +286,6 @@ components:
       properties:
         error:
           nullable: true
-          type: string
-      type: object
-    Error:
-      properties:
-        message:
-          description: Error message
-          type: string
-      type: object
-    ExampleResponse:
-      properties:
-        message:
           type: string
       type: object
     FileHeader:
@@ -321,7 +310,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -332,7 +321,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
