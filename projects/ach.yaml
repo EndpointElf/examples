@@ -32,7 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-      summary: Create a new ACH file
+      summary: Create a new file
   /files/{fileID}:
     delete:
       responses:
@@ -66,8 +66,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchesResponse'
           description: List of batches
-        "400":
-          description: Invalid request
         default:
           description: ""
     post:
@@ -78,8 +76,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
-        "400":
-          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -91,8 +87,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
-        "400":
-          description: Invalid request
         default:
           description: ""
     get:
@@ -103,8 +97,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchResponse'
           description: Batch details
-        "400":
-          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -115,7 +107,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
+          description: The file with flattened batches
         default:
           description: ""
   /files/{fileID}/segment:
@@ -145,7 +137,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
@@ -219,10 +211,24 @@ components:
       properties:
         batchHeader:
           description: Header information for the batch
+          properties:
+            companyName:
+              description: Company name
+              type: string
+            serviceClassCode:
+              description: Service class code
+              type: integer
           type: object
         entries:
           items:
-            description: Entry details within the batch
+            description: Entry detail record
+            properties:
+              amount:
+                description: Transaction amount
+                type: integer
+              transactionCode:
+                description: Transaction code
+                type: integer
             type: object
           type: array
       type: object
