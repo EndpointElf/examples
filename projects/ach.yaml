@@ -25,6 +25,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
+        required: true
       responses:
         "200":
           content:
@@ -32,7 +33,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-      summary: Create a new ACH file
+      summary: Create a new file
   /files/{fileID}:
     delete:
       responses:
@@ -115,7 +116,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: Flattened ACH file
+          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -145,7 +146,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
@@ -170,6 +171,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidateFileResponse'
           description: Validation result
+        default:
+          description: ""
+  /merge:
+    post:
+      responses:
         default:
           description: ""
   /ping:
@@ -251,11 +257,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message, if any.
           nullable: true
           type: string
         id:
-          description: ID of the created batch
+          description: The ID of the created batch.
           type: string
       type: object
     CreateFileRequest:
@@ -278,7 +284,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message, if any.
           nullable: true
           type: string
       type: object
@@ -310,7 +316,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message, if any.
           nullable: true
           type: string
       type: object
@@ -321,7 +327,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
+          description: Error message, if any.
           nullable: true
           type: string
       type: object
@@ -340,6 +346,27 @@ components:
           $ref: '#/components/schemas/ACHFile'
       type: object
     GetFilesResponse:
+      properties:
+        error:
+          nullable: true
+          type: string
+        files:
+          items:
+            $ref: '#/components/schemas/ACHFile'
+          type: array
+      type: object
+    MergeFilesRequest:
+      properties:
+        fileIDs:
+          items:
+            type: string
+          type: array
+        files:
+          items:
+            $ref: '#/components/schemas/ACHFile'
+          type: array
+      type: object
+    MergeFilesResponse:
       properties:
         error:
           nullable: true
