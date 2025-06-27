@@ -15,9 +15,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetFilesResponse'
-          description: List of ACH files
+          description: A list of ACH files
         default:
           description: ""
+    post:
+      operationId: createFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFileRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFileResponse'
+          description: The created ACH file
+      summary: Create a new ACH file
   /files/{fileID}:
     delete:
       responses:
@@ -39,7 +54,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BalanceFileResponse'
-          description: File balanced successfully
+          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
@@ -100,7 +115,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: Batches flattened successfully
+          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -111,7 +126,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: File segmented successfully
+          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -129,15 +144,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
-          description: File built successfully
-      summary: Build an ACH file
+          description: The built ACH file
+      summary: Build a specific ACH file
   /files/{id}/contents:
     get:
       responses:
         "200":
           content:
-            text/plain: {}
-          description: File contents
+            text/plain:
+              schema:
+                type: string
+          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -152,7 +169,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidateFileResponse'
-          description: File validated successfully
+          description: Validation result
         default:
           description: ""
   /merge:
@@ -203,7 +220,7 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch object
+      description: ACH Batch data
       properties:
         batchHeader:
           description: Header information for the batch
@@ -217,7 +234,7 @@ components:
           type: object
         entries:
           items:
-            description: Entry detail record
+            description: Entry details
             properties:
               amount:
                 description: Transaction amount
@@ -274,12 +291,6 @@ components:
       properties:
         error:
           nullable: true
-          type: string
-      type: object
-    ErrorResponse:
-      properties:
-        error:
-          description: Error message describing the issue.
           type: string
       type: object
     FileHeader:
@@ -410,26 +421,4 @@ components:
       properties:
         someOption:
           type: string
-      type: object
-    ValidateRequest:
-      properties:
-        achFile:
-          description: The ACH file to be validated.
-          format: binary
-          type: string
-        validateOpts:
-          $ref: '#/components/schemas/ValidateOpts'
-      required:
-      - achFile
-      type: object
-    ValidateResponse:
-      properties:
-        errors:
-          description: List of validation errors, if any.
-          items:
-            type: string
-          type: array
-        isValid:
-          description: Indicates if the ACH file is valid.
-          type: boolean
       type: object
