@@ -42,7 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteFileResponse'
-          description: File deletion status
+          description: File deleted successfully
         "204":
           description: File deleted successfully
         default:
@@ -87,6 +87,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -103,6 +105,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -116,6 +120,8 @@ paths:
           description: Batch deleted successfully
         "204":
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -126,6 +132,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -178,6 +186,9 @@ paths:
       responses:
         "200":
           content:
+            application/json:
+              schema:
+                type: string
             text/plain:
               schema:
                 type: string
@@ -298,7 +309,7 @@ components:
     BatchResponse:
       properties:
         id:
-          example: batch123
+          example: batch_123
           type: string
         status:
           example: valid
@@ -318,9 +329,20 @@ components:
       type: object
     CreateBatchRequest:
       properties:
-        batchName:
-          example: batch1
-          type: string
+        batchHeader:
+          properties:
+            serviceClassCode:
+              example: 200
+              type: integer
+          type: object
+        entries:
+          items:
+            properties:
+              transactionCode:
+                example: 22
+                type: integer
+            type: object
+          type: array
       type: object
     CreateBatchResponse:
       properties:
@@ -372,7 +394,10 @@ components:
     FileResponse:
       properties:
         id:
-          example: file123
+          example: file_123
+          type: string
+        name:
+          example: example.ach
           type: string
         status:
           example: valid
