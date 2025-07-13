@@ -25,6 +25,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
+        required: true
       responses:
         "200":
           content:
@@ -32,7 +33,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-      summary: Create a new ACH file
+      summary: Create a new file
   /files/{fileID}:
     delete:
       responses:
@@ -49,6 +50,12 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceFileResponse'
+          description: Balanced file ID
         default:
           description: ""
   /files/{fileID}/batches:
@@ -96,11 +103,23 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlattenBatchesResponse'
+          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentedFilesResponse'
+          description: Segmented files
         default:
           description: ""
   /files/{id}/build:
@@ -119,15 +138,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
         "200":
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/GetFileContentsResponse'
+                type: string
           description: The contents of the ACH file
         default:
           description: ""
@@ -194,16 +213,16 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch data structure
+      description: ACH Batch object
       properties:
         batchHeader:
           description: Header information for the batch
           properties:
             companyName:
-              example: Test Company
+              description: Company name
               type: string
             serviceClassCode:
-              example: 200
+              description: Service class code
               type: integer
           type: object
         entries:
@@ -211,10 +230,10 @@ components:
             description: Entry detail record
             properties:
               amount:
-                example: 1000
+                description: Transaction amount
                 type: integer
               transactionCode:
-                example: 22
+                description: Transaction code
                 type: integer
             type: object
           type: array
@@ -306,12 +325,6 @@ components:
           type: array
         error:
           description: Error message if the operation failed.
-          nullable: true
-          type: string
-      type: object
-    GetFileContentsResponse:
-      properties:
-        error:
           nullable: true
           type: string
       type: object
