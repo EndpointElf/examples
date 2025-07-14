@@ -67,6 +67,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -77,6 +79,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -88,6 +92,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -98,6 +104,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -213,27 +221,27 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch object
+      description: ACH Batch data
       properties:
         batchHeader:
           description: Header information for the batch
           properties:
             companyName:
-              description: Company name
+              example: Test Company
               type: string
             serviceClassCode:
-              description: Service class code
+              example: 200
               type: integer
           type: object
         entries:
           items:
-            description: Entry detail record
+            description: Entry details within the batch
             properties:
               amount:
-                description: Transaction amount
+                example: 1000
                 type: integer
               transactionCode:
-                description: Transaction code
+                example: 22
                 type: integer
             type: object
           type: array
@@ -254,11 +262,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch.
+          description: The ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -281,7 +289,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -313,7 +321,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed.
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -324,7 +332,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed.
+          description: Error message if any
           nullable: true
           type: string
       type: object
