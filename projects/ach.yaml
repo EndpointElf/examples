@@ -50,12 +50,6 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BalanceFileResponse'
-          description: Balanced file ID
         default:
           description: ""
   /files/{fileID}/batches:
@@ -111,23 +105,11 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: Segmented files
         default:
           description: ""
   /files/{id}/build:
@@ -202,6 +184,10 @@ components:
   schemas:
     ACHFile:
       properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -221,29 +207,10 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch data
       properties:
-        batchHeader:
-          description: Header information for the batch
-          properties:
-            companyName:
-              example: Test Company
-              type: string
-            serviceClassCode:
-              example: 200
-              type: integer
-          type: object
         entries:
           items:
-            description: Entry details within the batch
-            properties:
-              amount:
-                example: 1000
-                type: integer
-              transactionCode:
-                example: 22
-                type: integer
-            type: object
+            $ref: '#/components/schemas/Entry'
           type: array
       type: object
     BuildFileResponse:
@@ -262,11 +229,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -289,7 +256,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -298,6 +265,13 @@ components:
         error:
           nullable: true
           type: string
+      type: object
+    Entry:
+      properties:
+        amount:
+          type: integer
+        transactionCode:
+          type: integer
       type: object
     FileHeader:
       properties:
@@ -321,7 +295,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -332,7 +306,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if any
+          description: Error message, if any
           nullable: true
           type: string
       type: object
