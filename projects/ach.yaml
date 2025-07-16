@@ -33,7 +33,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-      summary: Create a new file
+      summary: Create a new ACH file
   /files/{fileID}:
     delete:
       responses:
@@ -50,6 +50,12 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceFileResponse'
+          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
@@ -105,11 +111,23 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlattenBatchesResponse'
+          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentedFilesResponse'
+          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -128,7 +146,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a file by ID
+      summary: Build a specific ACH file
   /files/{id}/contents:
     get:
       responses:
@@ -210,7 +228,7 @@ components:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/Entry'
+            $ref: '#/components/schemas/EntryDetail'
           type: array
       type: object
     BuildFileResponse:
@@ -266,12 +284,21 @@ components:
           nullable: true
           type: string
       type: object
-    Entry:
+    EntryDetail:
       properties:
         amount:
           type: integer
         transactionCode:
           type: integer
+      type: object
+    ExampleResponse:
+      properties:
+        id:
+          example: "123"
+          type: string
+        name:
+          example: Example Name
+          type: string
       type: object
     FileHeader:
       properties:
