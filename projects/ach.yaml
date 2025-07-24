@@ -67,6 +67,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -77,6 +79,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -88,6 +92,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -98,6 +104,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -220,7 +228,7 @@ components:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/Entry'
+            $ref: '#/components/schemas/EntryDetail'
           type: array
       type: object
     BuildFileResponse:
@@ -239,11 +247,11 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
         id:
-          description: The ID of the created batch.
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -266,7 +274,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -276,7 +284,7 @@ components:
           nullable: true
           type: string
       type: object
-    Entry:
+    EntryDetail:
       properties:
         amount:
           type: integer
@@ -305,7 +313,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
@@ -316,7 +324,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed.
+          description: Error message, if any
           nullable: true
           type: string
       type: object
