@@ -50,12 +50,6 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
@@ -111,23 +105,11 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -228,7 +210,7 @@ components:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            $ref: '#/components/schemas/Entry'
           type: array
       type: object
     BuildFileResponse:
@@ -284,7 +266,7 @@ components:
           nullable: true
           type: string
       type: object
-    EntryDetail:
+    Entry:
       properties:
         amount:
           type: integer
