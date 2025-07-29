@@ -60,19 +60,51 @@ paths:
   /files/{fileID}/batches:
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBatchesResponse'
+          description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBatchResponse'
+          description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBatchResponse'
+          description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBatchResponse'
+          description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -121,7 +153,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetFileContentsResponse'
+                type: string
           description: The contents of the ACH file
         default:
           description: ""
@@ -169,10 +201,6 @@ components:
   schemas:
     ACHFile:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -186,20 +214,41 @@ components:
     BalanceFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         id:
           type: string
       type: object
     Batch:
+      description: ACH Batch object
       properties:
+        batchHeader:
+          description: Header information for the batch
+          properties:
+            companyName:
+              description: Company name
+              type: string
+            serviceClassCode:
+              description: Service class code
+              type: integer
+          type: object
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            description: Entry detail record
+            properties:
+              amount:
+                description: Transaction amount
+                type: integer
+              transactionCode:
+                description: Transaction code
+                type: integer
+            type: object
           type: array
       type: object
     BuildFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
           $ref: '#/components/schemas/ACHFile'
@@ -207,6 +256,16 @@ components:
     Conditions:
       properties:
         someCondition:
+          type: string
+      type: object
+    CreateBatchResponse:
+      properties:
+        error:
+          description: Error message, if any
+          nullable: true
+          type: string
+        id:
+          description: ID of the created batch
           type: string
       type: object
     CreateFileRequest:
@@ -219,23 +278,31 @@ components:
     CreateFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
       type: object
+    DeleteBatchResponse:
+      properties:
+        error:
+          description: Error message, if any
+          nullable: true
+          type: string
+      type: object
     DeleteFileResponse:
       properties:
         error:
+          nullable: true
           type: string
       type: object
-    EntryDetail:
+    ExampleResponse:
       properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
+        message:
+          example: Hello, world!
+          type: string
       type: object
     FileHeader:
       properties:
@@ -247,20 +314,37 @@ components:
     FlattenBatchesResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
           $ref: '#/components/schemas/ACHFile'
         id:
           type: string
       type: object
-    GetFileContentsResponse:
+    GetBatchResponse:
       properties:
+        batch:
+          $ref: '#/components/schemas/Batch'
         error:
+          description: Error message, if any
+          nullable: true
+          type: string
+      type: object
+    GetBatchesResponse:
+      properties:
+        batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+        error:
+          description: Error message, if any
+          nullable: true
           type: string
       type: object
     GetFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
           $ref: '#/components/schemas/ACHFile'
@@ -268,6 +352,7 @@ components:
     GetFilesResponse:
       properties:
         error:
+          nullable: true
           type: string
         files:
           items:
@@ -290,6 +375,7 @@ components:
     MergeFilesResponse:
       properties:
         error:
+          nullable: true
           type: string
         files:
           items:
@@ -335,11 +421,13 @@ components:
         debitFileID:
           type: string
         error:
+          nullable: true
           type: string
       type: object
     ValidateFileResponse:
       properties:
         error:
+          nullable: true
           type: string
       type: object
     ValidateOpts:
