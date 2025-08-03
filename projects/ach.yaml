@@ -25,7 +25,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFileRequest'
-        required: true
       responses:
         "200":
           content:
@@ -50,6 +49,12 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceFileResponse'
+          description: Balanced file ID
         default:
           description: ""
   /files/{fileID}/batches:
@@ -105,11 +110,23 @@ paths:
   /files/{fileID}/flatten:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlattenBatchesResponse'
+          description: Flattened file
         default:
           description: ""
   /files/{fileID}/segment:
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentedFilesResponse'
+          description: Segmented files
         default:
           description: ""
   /files/{id}/build:
@@ -134,9 +151,9 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/GetFileContentsResponse'
           description: The contents of the ACH file
         default:
           description: ""
@@ -203,7 +220,7 @@ components:
           type: string
       type: object
     Batch:
-      description: ACH Batch data
+      description: ACH Batch object
       properties:
         batchHeader:
           description: Header information for the batch
@@ -217,7 +234,7 @@ components:
           type: object
         entries:
           items:
-            description: Entry details
+            description: Entry detail record
             properties:
               amount:
                 description: Transaction amount
@@ -281,6 +298,12 @@ components:
           nullable: true
           type: string
       type: object
+    ErrorResponse:
+      properties:
+        error:
+          description: Error message
+          type: string
+      type: object
     FileHeader:
       properties:
         immediateDestination:
@@ -315,6 +338,12 @@ components:
           type: array
         error:
           description: Error message, if any
+          nullable: true
+          type: string
+      type: object
+    GetFileContentsResponse:
+      properties:
+        error:
           nullable: true
           type: string
       type: object
@@ -410,5 +439,22 @@ components:
     ValidateOpts:
       properties:
         someOption:
+          type: string
+      type: object
+    ValidateRequest:
+      properties:
+        achFile:
+          description: The ACH file to be validated
+          format: binary
+          type: string
+        validateOpts:
+          $ref: '#/components/schemas/ValidateOpts'
+      required:
+      - achFile
+      type: object
+    ValidateResponse:
+      properties:
+        message:
+          description: Result of the validation
           type: string
       type: object
