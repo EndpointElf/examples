@@ -66,6 +66,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchesResponse'
           description: List of batches
+        "400":
+          description: Invalid request
         default:
           description: ""
     post:
@@ -76,6 +78,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBatchResponse'
           description: Batch created successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -87,6 +91,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteBatchResponse'
           description: Batch deleted successfully
+        "400":
+          description: Invalid request
         default:
           description: ""
     get:
@@ -97,6 +103,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBatchResponse'
           description: Batch details
+        "400":
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -143,9 +151,9 @@ paths:
       responses:
         "200":
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/GetFileContentsResponse'
+                type: string
           description: The contents of the ACH file
         default:
           description: ""
@@ -253,7 +261,7 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message if any error occurred.
           nullable: true
           type: string
         id:
@@ -280,7 +288,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message if the operation failed.
+          description: Error message if any error occurred.
           nullable: true
           type: string
       type: object
@@ -288,6 +296,12 @@ components:
       properties:
         error:
           nullable: true
+          type: string
+      type: object
+    Error:
+      properties:
+        message:
+          description: Error message.
           type: string
       type: object
     FileHeader:
@@ -312,7 +326,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message if the operation failed.
+          description: Error message if any error occurred.
           nullable: true
           type: string
       type: object
@@ -323,13 +337,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message if the operation failed.
-          nullable: true
-          type: string
-      type: object
-    GetFileContentsResponse:
-      properties:
-        error:
+          description: Error message if any error occurred.
           nullable: true
           type: string
       type: object
