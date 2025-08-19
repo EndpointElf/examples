@@ -33,7 +33,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
-          description: The created file
+          description: The created ACH file
         "201":
           description: ACH file stored successfully
         "400":
@@ -62,7 +62,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BalanceFileResponse'
-          description: Balanced file
+          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
@@ -141,7 +141,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: Flattened file
+          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/segment:
@@ -152,7 +152,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: Segmented files
+          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -176,17 +176,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
-          description: The built file
-      summary: Build a file
+          description: The built ACH file
+      summary: Build a specific ACH file
   /files/{id}/contents:
     get:
       responses:
         "200":
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileContentsResponse'
             text/plain:
               schema:
                 type: string
-          description: The file contents
+          description: The contents of the ACH file
         default:
           description: ""
   /files/{id}/validate:
@@ -233,7 +236,7 @@ paths:
               schema:
                 example: PONG
                 type: string
-          description: PONG
+          description: Pong response
           headers:
             Content-Type:
               description: text/plain
@@ -254,6 +257,13 @@ paths:
           description: ""
 components:
   schemas:
+    ACHFile:
+      properties:
+        header:
+          $ref: '#/components/schemas/FileHeader'
+        id:
+          type: string
+      type: object
     BalanceFileRequest:
       properties:
         offset:
@@ -262,6 +272,7 @@ components:
     BalanceFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         id:
           type: string
@@ -271,8 +282,6 @@ components:
         ID:
           description: Unique identifier for the batch
           type: string
-      required:
-      - ID
       type: object
     BatchResponse:
       properties:
@@ -280,7 +289,7 @@ components:
           example: batch123
           type: string
         status:
-          example: valid
+          example: created
           type: string
       type: object
     BatchesResponse:
@@ -290,13 +299,20 @@ components:
     BuildFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
       type: object
     Conditions:
       properties:
         someCondition:
+          type: string
+      type: object
+    CreateBatchRequest:
+      properties:
+        batchName:
+          example: batch1
           type: string
       type: object
     CreateBatchResponse:
@@ -312,16 +328,17 @@ components:
     CreateFileRequest:
       properties:
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         validateOpts:
           $ref: '#/components/schemas/ValidateOpts'
       type: object
     CreateFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         id:
           type: string
       type: object
@@ -335,13 +352,23 @@ components:
     DeleteFileResponse:
       properties:
         error:
+          nullable: true
           type: string
       type: object
     File:
       properties:
-        header:
-          $ref: '#/components/schemas/FileHeader'
-        id:
+        Batches:
+          items:
+            $ref: '#/components/schemas/Batch'
+          type: array
+        Header:
+          properties:
+            FileCreationDate:
+              description: Creation date of the file in YYMMDD format
+              type: string
+          type: object
+        ID:
+          description: Unique identifier for the ACH file
           type: string
       type: object
     FileHeader:
@@ -356,11 +383,8 @@ components:
         id:
           example: file123
           type: string
-        name:
-          example: example.ach
-          type: string
         status:
-          example: valid
+          example: built
           type: string
       type: object
     FilesResponse:
@@ -370,9 +394,10 @@ components:
     FlattenBatchesResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         id:
           type: string
       type: object
@@ -396,20 +421,28 @@ components:
           nullable: true
           type: string
       type: object
+    GetFileContentsResponse:
+      properties:
+        error:
+          nullable: true
+          type: string
+      type: object
     GetFileResponse:
       properties:
         error:
+          nullable: true
           type: string
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
       type: object
     GetFilesResponse:
       properties:
         error:
+          nullable: true
           type: string
         files:
           items:
-            $ref: '#/components/schemas/File'
+            $ref: '#/components/schemas/ACHFile'
           type: array
       type: object
     MergeFilesRequest:
@@ -422,16 +455,17 @@ components:
           type: array
         files:
           items:
-            $ref: '#/components/schemas/File'
+            $ref: '#/components/schemas/ACHFile'
           type: array
       type: object
     MergeFilesResponse:
       properties:
         error:
+          nullable: true
           type: string
         files:
           items:
-            $ref: '#/components/schemas/File'
+            $ref: '#/components/schemas/ACHFile'
           type: array
       type: object
     Offset:
@@ -456,7 +490,7 @@ components:
     SegmentFileRequest:
       properties:
         file:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         opts:
           $ref: '#/components/schemas/SegmentFileConfiguration'
         validateOpts:
@@ -465,19 +499,21 @@ components:
     SegmentedFilesResponse:
       properties:
         creditFile:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         creditFileID:
           type: string
         debitFile:
-          $ref: '#/components/schemas/File'
+          $ref: '#/components/schemas/ACHFile'
         debitFileID:
           type: string
         error:
+          nullable: true
           type: string
       type: object
     ValidateFileResponse:
       properties:
         error:
+          nullable: true
           type: string
       type: object
     ValidateOpts:
