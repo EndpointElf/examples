@@ -19,13 +19,12 @@ paths:
         default:
           description: ""
     post:
-      operationId: storeFile
+      operationId: createFile
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/File'
-        description: ACH file to store
+              $ref: '#/components/schemas/CreateFileRequest'
         required: true
       responses:
         "200":
@@ -34,24 +33,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateFileResponse'
           description: The created ACH file
-        "201":
-          description: ACH file stored successfully
-        "400":
-          description: Invalid input
-        "409":
-          description: File already exists
-      summary: Store a new ACH file
+      summary: Create a new file
   /files/{fileID}:
     delete:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResponse'
+          description: File deleted successfully
         default:
           description: ""
     get:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileResponse'
+          description: The requested ACH file
         default:
           description: ""
     post:
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+          description: File created successfully
         default:
           description: ""
   /files/{fileID}/balance:
@@ -76,8 +87,6 @@ paths:
           description: List of batches
         "400":
           description: Invalid request
-        "404":
-          description: File not found
         default:
           description: ""
     post:
@@ -88,14 +97,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BatchResponse'
           description: Batch created successfully
-        "201":
-          description: Batch stored successfully
         "400":
-          description: Invalid input
-        "404":
-          description: File not found
-        "409":
-          description: Batch already exists
+          description: Invalid request
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
@@ -107,12 +110,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
           description: Batch deleted successfully
-        "204":
-          description: Batch deleted successfully
         "400":
           description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
     get:
@@ -125,8 +124,6 @@ paths:
           description: Batch details
         "400":
           description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
   /files/{fileID}/flatten:
@@ -179,6 +176,9 @@ paths:
       responses:
         "200":
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileContentsResponse'
             text/plain:
               schema:
                 type: string
@@ -252,10 +252,6 @@ components:
   schemas:
     ACHFile:
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         header:
           $ref: '#/components/schemas/FileHeader'
         id:
@@ -281,10 +277,10 @@ components:
       type: object
     Batch:
       properties:
-        entries:
-          items:
-            $ref: '#/components/schemas/EntryDetail'
-          type: array
+        id:
+          type: string
+        name:
+          type: string
       type: object
     BatchResponse:
       properties:
@@ -354,23 +350,13 @@ components:
     DeleteResponse:
       properties:
         message:
-          example: Resource deleted successfully
           type: string
-      type: object
-    EntryDetail:
-      properties:
-        amount:
-          type: integer
-        transactionCode:
-          type: integer
       type: object
     File:
       properties:
         id:
-          example: file123
           type: string
         name:
-          example: example.ach
           type: string
       type: object
     FileHeader:
@@ -424,6 +410,12 @@ components:
           type: array
         error:
           description: Error message, if any
+          nullable: true
+          type: string
+      type: object
+    GetFileContentsResponse:
+      properties:
+        error:
           nullable: true
           type: string
       type: object
@@ -505,7 +497,7 @@ components:
       properties:
         segments:
           items:
-            type: object
+            type: string
           type: array
       type: object
     SegmentedFilesResponse:
