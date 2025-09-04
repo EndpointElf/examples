@@ -57,89 +57,29 @@ paths:
   /files/{fileID}/balance:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BalanceFileResponse'
-          description: The balanced ACH file
         default:
           description: ""
   /files/{fileID}/batches:
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Batch'
-                type: array
-          description: A list of batches
-        "400":
-          description: Invalid request
-        "404":
-          description: ACH file not found
         default:
           description: ""
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateBatchResponse'
-          description: Batch created successfully
-        "201":
-          description: Batch stored successfully
-        "400":
-          description: Invalid request
-        "404":
-          description: ACH file not found
-        "409":
-          description: Batch already exists
         default:
           description: ""
   /files/{fileID}/batches/{batchID}:
     delete:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteBatchResponse'
-          description: Batch deleted successfully
-        "204":
-          description: Batch deleted successfully
-        "400":
-          description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
     get:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Batch'
-          description: Batch details
-        "400":
-          description: Invalid request
-        "404":
-          description: Batch not found
         default:
           description: ""
   /files/{fileID}/flatten:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FlattenBatchesResponse'
-          description: The flattened ACH file
         default:
           description: ""
   /files/{fileID}/new:
@@ -150,12 +90,6 @@ paths:
   /files/{fileID}/segment:
     post:
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SegmentedFilesResponse'
-          description: The segmented ACH files
         default:
           description: ""
   /files/{id}/build:
@@ -174,7 +108,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildFileResponse'
           description: The built ACH file
-      summary: Build a specific ACH file
+      summary: Build a file by ID
   /files/{id}/contents:
     get:
       responses:
@@ -256,7 +190,7 @@ components:
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/EntryDetail'
+            $ref: '#/components/schemas/Entry'
           type: array
       type: object
     BuildFileResponse:
@@ -275,7 +209,7 @@ components:
     CreateBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
         id:
@@ -302,7 +236,7 @@ components:
     DeleteBatchResponse:
       properties:
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -312,7 +246,7 @@ components:
           nullable: true
           type: string
       type: object
-    EntryDetail:
+    Entry:
       properties:
         amount:
           type: integer
@@ -326,14 +260,13 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         Header:
-          properties:
-            FileCreationDate:
-              description: Creation date of the file in YYMMDD format
-              type: string
-          type: object
+          $ref: '#/components/schemas/FileHeader'
         ID:
           description: Unique identifier for the ACH file
           type: string
+      required:
+      - ID
+      - Header
       type: object
     FileHeader:
       properties:
@@ -357,7 +290,7 @@ components:
         batch:
           $ref: '#/components/schemas/Batch'
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
@@ -368,7 +301,7 @@ components:
             $ref: '#/components/schemas/Batch'
           type: array
         error:
-          description: Error message, if any
+          description: Error message if any
           nullable: true
           type: string
       type: object
